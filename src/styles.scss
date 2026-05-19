@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-brand-blue: #1e40af;
+  --color-brand-blue-light: #3b82f6;
+  --color-brand-orange: #ea580c;
+  --color-brand-orange-light: #fb923c;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+html,
+body {
+  @apply h-full antialiased;
+  overflow-x: hidden;
+}
+
+body {
+  @apply bg-slate-50 text-slate-800;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior-y: none;
+}
+
+/* Evita zoom automático no iOS ao focar inputs (mín. 16px) */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: inherit;
+  }
+}
+
+/* Áreas seguras (notch / barra inferior) */
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+}
+
+.safe-bottom {
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.safe-x {
+  padding-left: max(1rem, env(safe-area-inset-left, 0px));
+  padding-right: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+/* Alvo de toque mínimo ~48px (acessibilidade mobile) */
+.touch-target {
+  min-height: 3rem;
+  min-width: 3rem;
+}
+
+.touch-row {
+  min-height: 3.25rem;
+}
+
+/* Sheet / modal no mobile */
+.sheet-bottom {
+  max-height: min(92dvh, 100%);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.scroll-touch {
+  -webkit-overflow-scrolling: touch;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}

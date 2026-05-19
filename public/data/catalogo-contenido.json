@@ -1,0 +1,65 @@
+{
+  "secciones": {
+    "lampadas": {
+      "descripcion": "Lámpadas automotrices: halógenas, LED y incandescentes para faros y luces internas.",
+      "imagen": "/assets/secciones/lampadas.jpg"
+    },
+    "lanternas": {
+      "descripcion": "Lanternas traseras, delanteras y de posición para todo tipo de vehículos.",
+      "imagen": "/assets/secciones/lanternas.jpg"
+    },
+    "reguladores": {
+      "descripcion": "Reguladores de voltaje para alternadores. Calidad garantizada.",
+      "imagen": "/assets/secciones/reguladores.jpg"
+    },
+    "rectificador": {
+      "descripcion": "Rectificadores y diodos para sistemas de carga eléctrica.",
+      "imagen": "/assets/secciones/rectificador.jpg"
+    },
+    "placa": {
+      "descripcion": "Placas electrónicas y tarjetas para alternadores y arranques.",
+      "imagen": "/assets/secciones/placa.jpg"
+    },
+    "chicotes": {
+      "descripcion": "Chicotes, cables y arneses eléctricos automotrices.",
+      "imagen": "/assets/secciones/chicotes.jpg"
+    },
+    "alternadores": {
+      "descripcion": "Alternadores nuevos y reconstruidos. Amplio stock para camionetas y autos.",
+      "imagen": "/assets/secciones/alternadores.jpg"
+    },
+    "arranques": {
+      "descripcion": "Motores de arranque para todas las marcas. Consulte aplicación por vehículo.",
+      "imagen": "/assets/secciones/arranques.jpg"
+    },
+    "porta-carvao": {
+      "descripcion": "Porta carbón y escobillas para motores de arranque.",
+      "imagen": "/assets/secciones/porta-carvao.jpg"
+    },
+    "resistencia": {
+      "descripcion": "Resistencias para ventiladores, bobinas y sistemas eléctricos.",
+      "imagen": "/assets/secciones/resistencia.jpg"
+    },
+    "bendix": {
+      "descripcion": "Bendix e impulsores para motores de arranque.",
+      "imagen": "/assets/secciones/bendix.jpg"
+    },
+    "planetarios": {
+      "descripcion": "Engranajes planetarios para reparación de arranques.",
+      "imagen": "/assets/secciones/planetarios.jpg"
+    },
+    "solenoides": {
+      "descripcion": "Solenoides y relés de arranque. Marcas originales y equivalentes.",
+      "imagen": "/assets/secciones/solenoides.jpg"
+    },
+    "mancais": {
+      "descripcion": "Mancais y cojinetes para alternadores y arranques.",
+      "imagen": "/assets/secciones/mancais.jpg"
+    },
+    "acessorios": {
+      "descripcion": "Accesorios eléctricos: bornes, fusibles, conectores y más.",
+      "imagen": "/assets/secciones/acessorios.jpg"
+    }
+  },
+  "productos": {}
+}

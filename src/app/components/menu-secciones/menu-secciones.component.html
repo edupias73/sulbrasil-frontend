@@ -1,0 +1,74 @@
+@if (abierto) {
+  <div
+    class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-sm"
+    (click)="cerrar.emit()"
+    aria-hidden="true"
+  ></div>
+
+  <nav
+    class="safe-top sheet-bottom scroll-touch fixed inset-y-0 left-0 z-[70] flex w-[min(100%,22rem)] flex-col bg-white shadow-2xl sm:w-80"
+    aria-label="Secciones del catálogo"
+  >
+    <div class="flex shrink-0 items-center justify-between border-b border-slate-200 bg-blue-700 px-4 py-4 text-white">
+      <div>
+        <p class="text-xs font-semibold uppercase tracking-wider text-blue-200">Catálogo</p>
+        <h2 class="text-xl font-bold">Secciones</h2>
+      </div>
+      <button
+        type="button"
+        (click)="cerrar.emit()"
+        class="touch-target flex h-12 w-12 items-center justify-center rounded-full bg-white/20 text-2xl active:bg-white/30"
+        aria-label="Cerrar menú"
+      >
+        ×
+      </button>
+    </div>
+
+    <div class="scroll-touch flex-1 overflow-y-auto p-3">
+      <button
+        type="button"
+        (click)="seleccionarSeccion(null)"
+        class="touch-row mb-2 flex w-full items-center gap-4 rounded-2xl px-4 py-4 text-left text-base font-semibold active:scale-[0.99]"
+        [class]="
+          seccionActiva === null
+            ? 'bg-orange-50 text-orange-700 ring-2 ring-orange-400'
+            : 'bg-slate-50 text-slate-700 active:bg-slate-100'
+        "
+      >
+        <span class="text-2xl">🏠</span>
+        <span>Todas las secciones</span>
+      </button>
+
+      <ul class="space-y-1.5">
+        @for (sec of secciones; track sec.id) {
+          <li>
+            <button
+              type="button"
+              (click)="seleccionarSeccion(sec.id)"
+              class="touch-row flex w-full items-center gap-4 rounded-2xl px-4 py-4 text-left text-base font-semibold active:scale-[0.99]"
+              [class]="
+                seccionActiva === sec.id
+                  ? 'bg-blue-50 text-blue-800 ring-2 ring-blue-500'
+                  : 'bg-slate-50 text-slate-700 active:bg-slate-100'
+              "
+            >
+              <span class="text-2xl" aria-hidden="true">{{ sec.icono }}</span>
+              <span class="leading-tight">{{ sec.nombre }}</span>
+            </button>
+          </li>
+        }
+      </ul>
+    </div>
+
+    <div class="safe-bottom shrink-0 border-t border-slate-100 p-3">
+      <a
+        routerLink="/admin"
+        (click)="cerrar.emit()"
+        class="touch-row flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-100 py-4 text-base font-semibold text-slate-700 active:bg-slate-200"
+      >
+        ⚙️ Administrar fotos y textos
+      </a>
+      <p class="mt-2 text-center text-xs text-slate-400">Toque una sección para ver productos</p>
+    </div>
+  </nav>
+}
