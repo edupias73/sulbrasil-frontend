@@ -55,18 +55,16 @@ export class CarritoService {
 
   enviarPedidoWhatsApp(numero: string): void {
     const items = this.items();
-    if (items.length === 0) {
-      return;
-    }
+    if (items.length === 0) return;
 
     const lineas = items.map(
-      (item) =>
-        `- ${item.cantidad}x ${item.produto.nomePeca} (Cod: ${item.produto.codigoInterno}) - Gs ${this.formatearPrecio(item.produto.preco * item.cantidad)}`,
+      (item) => `- ${item.cantidad}x ${item.produto.nomePeca} (Cód: ${item.produto.codigoInterno})`
     );
-
-    const texto = `¡Hola! Me gustaría hacer el siguiente pedido:\n${lineas.join('\n')}`;
+    
+    // Mensagem de Orçamento
+    const texto = `¡Hola! Me gustaría solicitar un presupuesto para los siguientes repuestos:\n\n${lineas.join('\n')}`;
+    
     const url = `https://wa.me/${numero}?text=${encodeURIComponent(texto)}`;
-
     window.open(url, '_blank');
   }
 

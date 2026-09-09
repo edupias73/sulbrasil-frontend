@@ -16,50 +16,42 @@
 
     @if (produto.urlImagen) {
       <div class="relative aspect-[16/10] shrink-0 bg-slate-100 sm:aspect-[2/1]">
-        <img [src]="produto.urlImagen" [alt]="produto.nomePeca" class="h-full w-full object-contain p-3" />
+        <img [src]="produto.urlImagen" [alt]="produto.nomePeca" class="h-full w-full object-contain p-3 mix-blend-multiply" />
       </div>
     }
 
-    <div class="shrink-0 border-b border-slate-100 bg-gradient-to-r from-blue-700 to-blue-600 px-4 py-4 text-white sm:px-5">
+    <div class="shrink-0 border-b border-slate-100 bg-gradient-to-r from-brand-navy-800 to-blue-700 px-4 py-5 text-white sm:px-5">
       <div class="flex items-start justify-between gap-3">
         <div class="min-w-0 flex-1">
-          <p class="font-mono text-sm font-semibold text-orange-200">{{ produto.codigoInterno }}</p>
+          <p class="font-mono text-xs font-bold text-brand-amber">{{ produto.codigoInterno }}</p>
           <h2 id="detalle-titulo" class="mt-1 text-lg font-bold leading-snug sm:text-xl">
             {{ produto.nomePeca }}
           </h2>
           <p class="mt-1 text-sm text-blue-100">{{ produto.marcaPrincipal }}</p>
           @if (produto.descripcion) {
-            <p class="mt-2 text-sm leading-relaxed text-blue-50/90">{{ produto.descripcion }}</p>
+            <p class="mt-3 text-sm leading-relaxed text-blue-50/90 bg-black/10 p-3 rounded-lg border border-white/10">{{ produto.descripcion }}</p>
           }
         </div>
         <button
           type="button"
           (click)="cerrarModal()"
-          class="touch-target flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20 text-2xl leading-none active:bg-white/30"
+          class="touch-target flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-xl leading-none active:bg-white/20 transition-colors"
           aria-label="Cerrar"
         >
-          ×
+          <i class="fa-solid fa-xmark"></i>
         </button>
       </div>
-      <p class="mt-3 text-2xl font-extrabold sm:text-3xl">Gs {{ carrito.formatearPrecio(produto.preco) }}</p>
-      @if (produto.quantidadeEstoque <= 0) {
-        <span class="mt-2 inline-block rounded-full bg-red-500/90 px-3 py-1 text-xs font-bold">Sin stock</span>
-      } @else if (produto.quantidadeEstoque <= 3) {
-        <span class="mt-2 inline-block rounded-full bg-orange-400/90 px-3 py-1 text-xs font-bold">
-          Últimas unidades ({{ produto.quantidadeEstoque }})
-        </span>
-      }
     </div>
 
     <div class="flex shrink-0 border-b border-slate-200 bg-slate-50">
       <button
         type="button"
         (click)="seleccionarTab('aplicaciones')"
-        class="touch-row flex-1 py-4 text-sm font-bold sm:text-base"
+        class="touch-row flex-1 py-4 text-sm font-bold sm:text-base transition-colors"
         [class]="
           tabActiva() === 'aplicaciones'
-            ? 'border-b-2 border-blue-600 bg-white text-blue-700'
-            : 'text-slate-500'
+            ? 'border-b-2 border-brand-navy-700 bg-white text-brand-navy-800'
+            : 'text-slate-500 hover:text-slate-700'
         "
       >
         Aplicaciones
@@ -67,38 +59,40 @@
       <button
         type="button"
         (click)="seleccionarTab('codigos')"
-        class="touch-row flex-1 py-4 text-sm font-bold sm:text-base"
+        class="touch-row flex-1 py-4 text-sm font-bold sm:text-base transition-colors"
         [class]="
           tabActiva() === 'codigos'
-            ? 'border-b-2 border-blue-600 bg-white text-blue-700'
-            : 'text-slate-500'
+            ? 'border-b-2 border-brand-navy-700 bg-white text-brand-navy-800'
+            : 'text-slate-500 hover:text-slate-700'
         "
       >
-        Códigos
+        Códigos OEM
       </button>
     </div>
 
-    <div class="scroll-touch min-h-0 flex-1 overflow-y-auto p-4">
+    <div class="scroll-touch min-h-0 flex-1 overflow-y-auto p-4 bg-slate-50">
       @if (tabActiva() === 'aplicaciones') {
         @if (produto.aplicacoesVeiculo.length === 0) {
-          <p class="py-10 text-center text-base text-slate-500">Sin aplicaciones registradas.</p>
+          <div class="py-10 text-center text-slate-400">
+             <i class="fa-solid fa-car text-3xl mb-2"></i>
+             <p class="text-sm">Sin aplicaciones registradas.</p>
+          </div>
         } @else {
-          <p class="mb-2 text-xs text-slate-400 sm:hidden">← Deslice la tabla si no ve todas las columnas</p>
-          <div class="scroll-touch -mx-1 overflow-x-auto rounded-xl border border-slate-200">
+          <div class="scroll-touch -mx-1 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
             <table class="w-full min-w-[300px] text-left text-sm">
               <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                 <tr>
-                  <th class="px-3 py-3.5 font-semibold">Montadora</th>
-                  <th class="px-3 py-3.5 font-semibold">Vehículo</th>
-                  <th class="px-3 py-3.5 font-semibold">Años</th>
+                  <th class="px-3 py-3 font-bold border-b border-slate-200">Montadora</th>
+                  <th class="px-3 py-3 font-bold border-b border-slate-200">Vehículo</th>
+                  <th class="px-3 py-3 font-bold border-b border-slate-200">Años</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
                 @for (app of produto.aplicacoesVeiculo; track app.id ?? $index) {
-                  <tr>
-                    <td class="px-3 py-3.5 font-medium">{{ app.montadora }}</td>
-                    <td class="px-3 py-3.5">{{ app.veiculo }}</td>
-                    <td class="px-3 py-3.5 text-slate-600 whitespace-nowrap">
+                  <tr class="hover:bg-slate-50">
+                    <td class="px-3 py-3 font-bold text-slate-700">{{ app.montadora }}</td>
+                    <td class="px-3 py-3 text-slate-600">{{ app.veiculo }}</td>
+                    <td class="px-3 py-3 text-slate-500 whitespace-nowrap">
                       {{ formatearAnos(app.anoInicio, app.anoFim) }}
                     </td>
                   </tr>
@@ -109,21 +103,24 @@
         }
       } @else {
         @if (produto.codigosCruzados.length === 0) {
-          <p class="py-10 text-center text-base text-slate-500">Sin códigos equivalentes.</p>
+          <div class="py-10 text-center text-slate-400">
+            <i class="fa-solid fa-barcode text-3xl mb-2"></i>
+            <p class="text-sm">Sin códigos equivalentes.</p>
+         </div>
         } @else {
-          <div class="scroll-touch -mx-1 overflow-x-auto rounded-xl border border-slate-200">
+          <div class="scroll-touch -mx-1 overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-sm">
             <table class="w-full min-w-[260px] text-left text-sm">
               <thead class="bg-slate-100 text-xs uppercase text-slate-600">
                 <tr>
-                  <th class="px-3 py-3.5 font-semibold">Marca</th>
-                  <th class="px-3 py-3.5 font-semibold">Código</th>
+                  <th class="px-3 py-3 font-bold border-b border-slate-200">Marca</th>
+                  <th class="px-3 py-3 font-bold border-b border-slate-200">Código Equivalente</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
                 @for (cod of produto.codigosCruzados; track cod.id ?? $index) {
-                  <tr>
-                    <td class="px-3 py-3.5 font-medium">{{ cod.marcaFabricante }}</td>
-                    <td class="px-3 py-3.5 font-mono text-base text-blue-700">{{ cod.codigo }}</td>
+                  <tr class="hover:bg-slate-50">
+                    <td class="px-3 py-3 font-bold text-slate-700">{{ cod.marcaFabricante }}</td>
+                    <td class="px-3 py-3 font-mono text-brand-navy-600 font-bold tracking-wide">{{ cod.codigo }}</td>
                   </tr>
                 }
               </tbody>
@@ -133,14 +130,13 @@
       }
     </div>
 
-    <div class="safe-bottom shrink-0 border-t border-slate-100 bg-white p-4">
+    <div class="safe-bottom shrink-0 border-t border-slate-200 bg-white p-5">
       <button
         type="button"
         (click)="anadirAlCarrito()"
-        [disabled]="produto.quantidadeEstoque <= 0"
-        class="touch-row w-full rounded-2xl bg-green-600 py-4 text-lg font-bold text-white shadow-lg active:scale-[0.98] disabled:bg-slate-300 disabled:shadow-none"
+        class="touch-row flex w-full items-center justify-center gap-2 rounded-xl bg-brand-navy-800 py-4 text-lg font-bold text-white shadow-lg active:scale-95 hover:bg-brand-navy-900 transition-transform"
       >
-        Añadir al Carrito
+        <i class="fa-solid fa-plus"></i> Añadir a mi Pedido
       </button>
     </div>
   </div>

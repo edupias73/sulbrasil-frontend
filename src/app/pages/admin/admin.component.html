@@ -1,216 +1,190 @@
-<div class="min-h-[100dvh] bg-slate-100">
+<div class="min-h-[100dvh] bg-slate-50">
+  
+  <!-- TELA DE LOGIN -->
   @if (!autenticado()) {
-    <div class="safe-top safe-bottom safe-x mx-auto flex min-h-[100dvh] max-w-md flex-col justify-center px-4 py-8">
-      <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-lg">
-        <h1 class="text-center text-2xl font-bold text-blue-800">Panel Admin</h1>
-        <p class="mt-2 text-center text-sm text-slate-500">
-          PIN para editar fotos y descripciones desde el celular
-        </p>
-
-        <label class="mt-6 block">
-          <span class="text-sm font-semibold text-slate-700">PIN de acceso</span>
-          <input
-            type="password"
-            inputmode="numeric"
-            maxlength="8"
-            [formControl]="pinInput"
-            (keydown.enter)="ingresar()"
-            placeholder="••••"
-            class="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-5 text-center text-2xl tracking-[0.4em] focus:border-blue-500 focus:outline-none"
-          />
+    <div class="flex min-h-[100dvh] flex-col items-center justify-center px-4 py-8 bg-brand-navy-900 bg-[url('/assets/Captura\ de\ tela\ 2026-07-28\ 112419.png')] bg-cover bg-center" style="box-shadow: inset 0 0 0 2000px rgba(10, 31, 68, 0.85);">
+      <div class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl">
+        <div class="text-center mb-6">
+          <div class="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-brand-navy-900 mb-4 shadow-inner">
+            <i class="fa-solid fa-lock text-2xl"></i>
+          </div>
+          <h1 class="text-2xl font-extrabold text-slate-800">Panel Admin</h1>
+        </div>
+        
+        <label class="block mb-6">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-500">PIN de Seguridad</span>
+          <input type="password" inputmode="numeric" maxlength="8" [formControl]="pinInput" (keydown.enter)="ingresar()" placeholder="••••" class="mt-2 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-4 text-center text-3xl tracking-[0.5em] focus:border-brand-amber focus:bg-white focus:outline-none transition-colors" />
         </label>
 
         @if (mensaje(); as m) {
-          <p
-            class="mt-4 rounded-xl px-3 py-3 text-center text-sm font-semibold"
-            [class]="m.tipo === 'ok' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'"
-          >
+          <p class="mb-6 rounded-lg px-4 py-3 text-center text-sm font-bold shadow-sm" [class]="m.tipo === 'ok' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
             {{ m.texto }}
           </p>
         }
 
-        <button
-          type="button"
-          (click)="ingresar()"
-          class="touch-row mt-6 w-full rounded-2xl bg-blue-600 py-4 text-lg font-bold text-white shadow-md active:scale-[0.98]"
-        >
-          Entrar
-        </button>
-
-        <a
-          routerLink="/"
-          class="touch-row mt-3 flex w-full items-center justify-center rounded-2xl border-2 border-slate-200 py-4 text-base font-semibold text-slate-600 active:bg-slate-50"
-        >
-          Volver al catálogo
+        <button type="button" (click)="ingresar()" class="w-full rounded-xl bg-brand-navy-800 py-4 text-lg font-bold text-white shadow-lg hover:bg-brand-navy-900 transition mb-4">Ingresar</button>
+        <a routerLink="/" class="flex w-full items-center justify-center rounded-xl border-2 border-slate-200 bg-white py-4 text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
+          <i class="fa-solid fa-arrow-left mr-2"></i> Volver a la Tienda
         </a>
       </div>
     </div>
+
+  <!-- PAINEL LOGADO -->
   } @else {
-    <header class="safe-top sticky top-0 z-10 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur-md">
-      <div class="safe-x mx-auto flex max-w-lg items-center justify-between px-4 py-3">
-        <div>
-          <h1 class="text-lg font-bold text-blue-800 sm:text-xl">Administrar</h1>
-          <p class="text-xs text-slate-500">Fotos y descripciones</p>
+    <header class="safe-top sticky top-0 z-40 bg-brand-navy-900 shadow-md">
+      <div class="safe-x mx-auto flex max-w-2xl items-center justify-between px-4 py-4 text-white">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-shield-halved text-brand-amber text-2xl"></i>
+          <div>
+            <h1 class="text-lg font-bold leading-tight">Admin Sulbrasil</h1>
+          </div>
         </div>
-        <button
-          type="button"
-          (click)="salir()"
-          class="touch-target rounded-xl px-4 py-3 text-sm font-bold text-red-600 active:bg-red-50"
-        >
-          Salir
+        <button type="button" (click)="salir()" class="rounded-lg bg-white/10 px-4 py-2 text-sm font-bold hover:bg-white/20 transition">Salir</button>
+      </div>
+      
+      <!-- TABS -->
+      <div class="safe-x mx-auto max-w-2xl px-4 pb-0 flex gap-1 overflow-x-auto hide-scrollbar">
+        <button (click)="cambiarTab('manual')" class="flex-1 whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'manual' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
+          <i class="fa-solid fa-plus mr-1"></i> Crear
+        </button>
+        <button (click)="cambiarTab('productos')" class="flex-1 whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'productos' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
+          <i class="fa-solid fa-camera mr-1"></i> Editar Fotos
+        </button>
+        <button (click)="cambiarTab('csv')" class="flex-1 whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'csv' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
+          <i class="fa-solid fa-file-csv mr-1"></i> Excel
         </button>
       </div>
     </header>
 
-    <main class="safe-x mx-auto max-w-lg px-4 py-4 pb-[calc(6rem+env(safe-area-inset-bottom))]">
-      <div class="mb-4 flex rounded-2xl bg-slate-200 p-1.5">
-        <button
-          type="button"
-          (click)="cambiarTab('secciones')"
-          class="touch-row flex-1 rounded-xl py-3.5 text-sm font-bold sm:text-base"
-          [class]="tab() === 'secciones' ? 'bg-white text-blue-700 shadow' : 'text-slate-600'"
-        >
-          Secciones
-        </button>
-        <button
-          type="button"
-          (click)="cambiarTab('productos')"
-          class="touch-row flex-1 rounded-xl py-3.5 text-sm font-bold sm:text-base"
-          [class]="tab() === 'productos' ? 'bg-white text-blue-700 shadow' : 'text-slate-600'"
-        >
-          Productos
-        </button>
-      </div>
-
+    <main class="safe-x mx-auto max-w-2xl px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))]">
+      
       @if (mensaje(); as m) {
-        <div
-          class="mb-4 rounded-xl px-4 py-3 text-center text-sm font-semibold"
-          [class]="m.tipo === 'ok' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'"
-        >
-          {{ m.texto }}
+        <div class="mb-6 rounded-xl px-4 py-4 text-sm font-bold shadow-sm flex items-start gap-3" [class]="m.tipo === 'ok' ? 'bg-green-100 border border-green-200 text-green-800' : 'bg-red-100 border border-red-200 text-red-800'">
+          <span class="flex-1">{{ m.texto }}</span>
         </div>
       }
 
-      @if (tab() === 'secciones') {
-        <section class="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <!-- ABA 1: CRIAR PEÇA MANUAL (NOVA!) -->
+      @if (tab() === 'manual') {
+        <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 space-y-4">
+          <h2 class="text-xl font-bold text-slate-800 mb-2"><i class="fa-solid fa-box mr-2 text-brand-amber-dark"></i> Nuevo Producto</h2>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-xs font-bold text-slate-600">Código *</span>
+              <input type="text" [formControl]="manualCodigo" placeholder="Ej: SB-123" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 uppercase focus:border-brand-amber outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-xs font-bold text-slate-600">Precio (Gs) *</span>
+              <input type="number" [formControl]="manualPreco" placeholder="0" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+            </label>
+          </div>
+
           <label class="block">
-            <span class="text-sm font-bold text-slate-700">Sección</span>
-            <select
-              [formControl]="seccionSeleccionada"
-              (change)="onSeccionChange()"
-              class="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-4 text-base focus:border-blue-500 focus:outline-none"
-            >
-              @for (s of secciones; track s.id) {
-                <option [value]="s.id">{{ s.icono }} {{ s.nombre }}</option>
-              }
+            <span class="text-xs font-bold text-slate-600">Nombre de la Pieza *</span>
+            <input type="text" [formControl]="manualNombre" placeholder="Ej: Alternador 12V..." class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+          </label>
+
+          <div class="grid grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-xs font-bold text-slate-600">Marca</span>
+              <input type="text" [formControl]="manualMarca" placeholder="Ej: Bosch" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-xs font-bold text-slate-600">Stock</span>
+              <input type="number" [formControl]="manualEstoque" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+            </label>
+          </div>
+
+          <label class="block">
+            <span class="text-xs font-bold text-slate-600">Categoría</span>
+            <select [formControl]="manualCategoria" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none">
+              @for (s of secciones; track s.id) { <option [value]="s.id">{{ s.nombre }}</option> }
             </select>
           </label>
 
-          @if (previewSeccion) {
-            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-              <img [src]="previewSeccion" alt="Vista previa" class="mx-auto max-h-56 w-full object-contain p-3" />
-            </div>
-          }
+          <hr class="my-4 border-slate-200">
+          <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-image mr-1 text-slate-400"></i> Imagen y Detalles (Opcional)</h3>
 
-          <label class="block">
-            <span class="text-sm font-bold text-slate-700">Foto (cámara o galería)</span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              (change)="onArchivoSeccion($event)"
-              class="mt-2 w-full rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 py-4 text-sm file:mr-2 file:rounded-lg file:border-0 file:bg-blue-600 file:px-4 file:py-3 file:font-bold file:text-white"
-            />
-          </label>
+          <div>
+            @if (previewProducto) {
+              <div class="relative mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
+                <img [src]="previewProducto" class="mx-auto max-h-40 w-full object-contain p-2 mix-blend-multiply" />
+              </div>
+            }
+            <label class="flex items-center justify-center w-full rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 transition py-4 px-4 cursor-pointer text-blue-700 font-bold text-sm">
+              <i class="fa-solid fa-camera mr-2"></i> {{ previewProducto ? 'Cambiar Foto' : 'Tomar Foto' }}
+              <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" (change)="onArchivoProducto($event)" class="hidden" />
+            </label>
+          </div>
 
-          <label class="block">
-            <span class="text-sm font-bold text-slate-700">Descripción para clientes</span>
-            <textarea
-              [formControl]="descripcionSeccion"
-              rows="5"
-              placeholder="Texto visible en el catálogo..."
-              class="mt-2 w-full resize-none rounded-2xl border-2 border-slate-200 px-4 py-4 text-base focus:border-blue-500 focus:outline-none"
-            ></textarea>
-          </label>
-        </section>
-      } @else {
-        <section class="space-y-5 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-          <label class="block">
-            <span class="text-sm font-bold text-slate-700">Código interno</span>
-            <input
-              type="text"
-              [formControl]="codigoProducto"
-              placeholder="Ej: SB-123"
-              class="mt-2 w-full rounded-2xl border-2 border-slate-200 px-4 py-4 font-mono text-base uppercase focus:border-blue-500 focus:outline-none"
-            />
-            <button
-              type="button"
-              (click)="buscarProducto()"
-              class="touch-row mt-3 w-full rounded-2xl bg-slate-100 py-4 text-base font-bold text-slate-800 active:bg-slate-200"
-            >
-              Cargar datos del producto
-            </button>
-          </label>
+          <textarea [formControl]="descripcionProducto" rows="2" placeholder="Notas, aplicaciones..." class="w-full resize-none rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-brand-amber outline-none"></textarea>
 
-          @if (previewProducto) {
-            <div class="overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
-              <img [src]="previewProducto" alt="Vista previa" class="mx-auto max-h-56 w-full object-contain p-3" />
-            </div>
-          }
-
-          <label class="block">
-            <span class="text-sm font-bold text-slate-700">Foto del producto</span>
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              (change)="onArchivoProducto($event)"
-              class="mt-2 w-full rounded-xl border-2 border-dashed border-blue-200 bg-blue-50/50 py-4 text-sm file:mr-2 file:rounded-lg file:border-0 file:bg-blue-600 file:px-4 file:py-3 file:font-bold file:text-white"
-            />
-          </label>
-
-          <label class="block">
-            <span class="text-sm font-bold text-slate-700">Descripción</span>
-            <textarea
-              [formControl]="descripcionProducto"
-              rows="6"
-              placeholder="Detalles, aplicaciones, garantía..."
-              class="mt-2 w-full resize-none rounded-2xl border-2 border-slate-200 px-4 py-4 text-base focus:border-blue-500 focus:outline-none"
-            ></textarea>
-          </label>
+          <button type="button" (click)="guardarProductoManual()" [disabled]="guardando()" class="mt-4 w-full rounded-xl bg-brand-whatsapp py-4 text-lg font-bold text-white shadow-lg disabled:bg-slate-300 hover:bg-brand-whatsapp-dark transition">
+            {{ guardando() ? 'Guardando...' : 'Crear Producto' }}
+          </button>
         </section>
       }
-    </main>
 
-    <footer class="safe-bottom fixed inset-x-0 bottom-0 z-20 border-t border-slate-200 bg-white/95 p-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] backdrop-blur-md">
-      <div class="safe-x mx-auto flex max-w-lg flex-col gap-2">
-        @if (tab() === 'secciones') {
-          <button
-            type="button"
-            (click)="guardarSeccion()"
-            [disabled]="guardando()"
-            class="touch-row w-full rounded-2xl bg-green-600 py-4 text-lg font-bold text-white shadow-lg disabled:bg-slate-300"
-          >
-            {{ guardando() ? 'Guardando...' : 'Guardar sección' }}
-          </button>
+      <!-- ABA 2: EDITAR FOTOS EXISTENTES -->
+      @if (tab() === 'productos') {
+        @if (!produtoSelecionadoVisual()) {
+          <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+            <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-magnifying-glass mr-2 text-slate-400"></i> Buscar pieza para editar</h2>
+            <div class="flex gap-2 mb-6">
+              <input type="text" [formControl]="buscaAdmin" (keydown.enter)="buscarProdutoVisual()" placeholder="Nombre o código..." class="flex-1 rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-brand-amber" />
+              <button type="button" (click)="buscarProdutoVisual()" class="rounded-xl bg-brand-navy-800 px-5 font-bold text-white hover:bg-brand-navy-900"><i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+            @if (produtosBuscados().length > 0) {
+              <div class="space-y-3">
+                @for (p of produtosBuscados(); track p.id) {
+                  <button type="button" (click)="selecionarParaEditar(p)" class="w-full text-left flex flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-brand-amber">
+                    <span class="font-mono text-xs font-bold text-orange-600">{{ p.codigoInterno }}</span>
+                    <span class="text-sm font-bold text-slate-800">{{ p.nomePeca }}</span>
+                  </button>
+                }
+              </div>
+            }
+          </section>
         } @else {
-          <button
-            type="button"
-            (click)="guardarProducto()"
-            [disabled]="guardando()"
-            class="touch-row w-full rounded-2xl bg-green-600 py-4 text-lg font-bold text-white shadow-lg disabled:bg-slate-300"
-          >
-            {{ guardando() ? 'Guardando...' : 'Guardar producto' }}
-          </button>
+          <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 space-y-4">
+            <div class="flex items-start justify-between border-b pb-4">
+              <div>
+                <p class="font-mono text-xs font-bold text-brand-amber-dark">{{ produtoSelecionadoVisual()?.codigoInterno }}</p>
+                <h2 class="text-sm font-bold text-slate-800">{{ produtoSelecionadoVisual()?.nomePeca }}</h2>
+              </div>
+              <button (click)="limpiarSeleccionProduto()" class="h-8 w-8 rounded-full bg-slate-100 text-slate-500"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div>
+              @if (previewProducto) { <img [src]="previewProducto" class="mx-auto max-h-40 object-contain p-2" /> }
+              <label class="flex items-center justify-center w-full rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-4 cursor-pointer text-blue-700 font-bold">
+                <i class="fa-solid fa-camera mr-2"></i> Tomar Foto
+                <input type="file" accept="image/jpeg,image/png" capture="environment" (change)="onArchivoProducto($event)" class="hidden" />
+              </label>
+            </div>
+            
+            <textarea [formControl]="descripcionProducto" rows="3" placeholder="Descripción pública..." class="w-full rounded-xl border-2 border-slate-200 bg-slate-50 p-3"></textarea>
+            
+            <button type="button" (click)="guardarFotoExistente()" [disabled]="guardando()" class="w-full rounded-xl bg-brand-whatsapp py-4 font-bold text-white">Guardar Cambios</button>
+          </section>
         }
-        <button
-          type="button"
-          (click)="volverCatalogo()"
-          class="touch-row w-full rounded-2xl border-2 border-blue-600 py-3.5 text-base font-bold text-blue-700 active:bg-blue-50"
-        >
-          Ver catálogo
-        </button>
-      </div>
-    </footer>
+      }
+
+      <!-- ABA 3: CSV -->
+      @if (tab() === 'csv') {
+        <section class="rounded-2xl border border-slate-200 bg-white p-6 text-center">
+          <i class="fa-solid fa-file-excel text-5xl text-green-600 mb-4"></i>
+          <h2 class="text-xl font-bold text-slate-800 mb-4">Actualizar Catálogo por Excel</h2>
+          <label class="block w-full rounded-xl border-2 border-dashed border-slate-300 bg-slate-50 py-10 cursor-pointer mb-4 hover:bg-slate-100">
+            <span class="font-bold text-brand-navy-600">Seleccionar archivo .CSV</span>
+            <input type="file" accept=".csv" (change)="onArchivoCsv($event)" class="hidden" />
+          </label>
+          @if (archivoCsv) { <p class="mb-4 font-bold text-sm">{{ archivoCsv.name }}</p> }
+          <button type="button" (click)="subirCsv()" [disabled]="!archivoCsv || guardando()" class="w-full rounded-xl bg-brand-navy-800 py-4 font-bold text-white">Importar</button>
+        </section>
+      }
+
+    </main>
   }
 </div>

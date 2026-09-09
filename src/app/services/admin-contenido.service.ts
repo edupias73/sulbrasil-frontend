@@ -42,6 +42,15 @@ export class AdminContenidoService {
     );
   }
 
+
+  importarCsv(archivo: File): Observable<any> {
+    const form = new FormData();
+    form.append('arquivo', archivo);
+    // Transforma a URL /buscar na URL /importar do seu backend
+    const url = environment.apiUrl.replace('/buscar', '/importar');
+    return this.http.post<any>(url, form);
+  }
+
   subirImagen(tipo: 'secciones' | 'productos', id: string, archivo: File): Observable<string> {
     const form = new FormData();
     form.append('tipo', tipo);
