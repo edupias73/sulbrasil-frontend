@@ -10,9 +10,9 @@ export class ProdutoService {
   private readonly contenido = inject(CatalogoContenidoService);
 
   constructor(private readonly http: HttpClient) {}
-
-  buscar(termo: string, categoria?: string | null): Observable<Produto[]> {
-    let params = new HttpParams().set('empresa', environment.empresa);
+buscar(termo: string, categoria?: string | null): Observable<Produto[]> {
+    // Começamos com os parâmetros vazios, sem injetar 'empresa'
+    let params = new HttpParams();
 
     if (termo.trim()) {
       params = params.set('q', termo.trim());

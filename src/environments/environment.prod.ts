@@ -1,6 +1,8 @@
 export const environment = {
-  apiUrl: 'http://localhost:8080/produtos/buscar',
+  apiUrl: 'https://sulbrasil-backend-production.up.railway.app/api/produtos/buscar',
+  catalogoContenidoUrl: 'https://sulbrasil-backend-production.up.railway.app/api/catalogo/contenido',
+  adminApiUrl: 'https://sulbrasil-backend-production.up.railway.app/api/admin',
   empresa: 'SULBRASIL',
-  whatsappNumero: '595981234567',
+  whatsappNumero: '595984304053',
   nombreTienda: 'SulBrasil Repuestos',
 };
