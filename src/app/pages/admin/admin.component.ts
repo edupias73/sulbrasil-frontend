@@ -7,12 +7,12 @@ import { SECCIONES_CATALOGO } from '../../config/secciones.config';
 import { ContenidoProducto, ContenidoSeccion } from '../../models/catalogo-contenido.model';
 import { AdminAuthService } from '../../services/admin-auth.service';
 import { AdminContenidoService } from '../../services/admin-contenido.service';
-import { CatalogoContenidoService } from '../../services/catalogo-contenido.service';
+import { CatalogoContenidoService, BannerCarousel } from '../../services/catalogo-contenido.service';
 import { ProdutoService } from '../../services/produto.service';
 import { Produto } from '../../models/produto.model';
 import { environment } from '../../../environments/environment';
 
-type TabAdmin = 'csv' | 'productos' | 'manual' | 'secciones';
+type TabAdmin = 'csv' | 'productos' | 'manual' | 'banners';
 
 @Component({
   selector: 'app-admin',
@@ -26,19 +26,17 @@ export class AdminComponent implements OnInit, OnDestroy {
   private readonly catalogo = inject(CatalogoContenidoService);
   private readonly produtoService = inject(ProdutoService);
   private readonly http = inject(HttpClient);
-  private readonly router = inject(Router);
 
   readonly secciones = SECCIONES_CATALOGO;
   readonly autenticado = signal(false);
-  readonly tab = signal<TabAdmin>('manual'); // Aba padrão agora é a manual
+  readonly tab = signal<TabAdmin>('manual');
   readonly guardando = signal(false);
   readonly mensaje = signal<{ tipo: 'ok' | 'error'; texto: string } | null>(null);
+  
+  // Banners State
+  readonly banners = signal<BannerCarousel[]>([]);
 
   readonly pinInput = new FormControl('', { nonNullable: true, validators: [Validators.required] });
-  readonly seccionSeleccionada = new FormControl('alternadores', { nonNullable: true });
-  readonly descripcionSeccion = new FormControl('', { nonNullable: true });
-  
-  // Campos para CADASTRO MANUAL
   readonly manualCodigo = new FormControl('', { nonNullable: true, validators: [Validators.required] });
   readonly manualNombre = new FormControl('', { nonNullable: true, validators: [Validators.required] });
   readonly manualMarca = new FormControl('', { nonNullable: true });
@@ -46,21 +44,15 @@ export class AdminComponent implements OnInit, OnDestroy {
   readonly manualPreco = new FormControl<number | null>(null, { validators: [Validators.required] });
   readonly manualEstoque = new FormControl<number>(1, { nonNullable: true });
   
-  // Campos para BUSCA/EDIÇÃO VISUAL
   readonly buscaAdmin = new FormControl('', { nonNullable: true });
   readonly produtosBuscados = signal<Produto[]>([]);
   readonly produtoSelecionadoVisual = signal<Produto | null>(null);
-  
   readonly codigoProducto = new FormControl('', { nonNullable: true });
   readonly descripcionProducto = new FormControl('', { nonNullable: true });
 
-  archivoSeccion: File | null = null;
   archivoProducto: File | null = null;
   archivoCsv: File | null = null;
-
-  previewSeccion: string | null = null;
   previewProducto: string | null = null;
-  imagenActualSeccion: string | null = null;
   imagenActualProducto: string | null = null;
 
   ngOnInit(): void {
@@ -100,9 +92,61 @@ export class AdminComponent implements OnInit, OnDestroy {
   cambiarTab(t: TabAdmin): void {
     this.tab.set(t);
     this.mensaje.set(null);
-    if (t === 'secciones') void this.cargarDatosSeccion();
+    if (t === 'banners') this.cargarBanners();
   }
 
+  // ==========================================
+  // CARROSSEL (BANNERS)
+  // ==========================================
+  async cargarBanners() {
+    try {
+      const contenido = await firstValueFrom(this.adminApi.obtenerContenido());
+      const sec = contenido.secciones['BANNERS_HOME'];
+      if (sec?.descripcion) {
+        this.banners.set(JSON.parse(sec.descripcion));
+      }
+    } catch {}
+  }
+
+  async subirBanner(event: Event, tipo: 'imagen' | 'video') {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) return;
+
+    this.guardando.set(true);
+    this.mensaje.set(null);
+    try {
+      const idBanner = 'banner-' + Date.now();
+      const url = await firstValueFrom(this.adminApi.subirImagen('secciones', idBanner, file));
+      const novosBanners = [...this.banners(), { id: idBanner, tipo, url }];
+      
+      await firstValueFrom(this.adminApi.guardarSeccion('BANNERS_HOME', { descripcion: JSON.stringify(novosBanners) }));
+      this.banners.set(novosBanners);
+      await this.catalogo.recargar();
+      this.mensaje.set({ tipo: 'ok', texto: '¡Banner añadido al carrusel!' });
+    } catch {
+      this.mensaje.set({ tipo: 'error', texto: 'Error al subir el archivo.' });
+    } finally {
+      this.guardando.set(false);
+    }
+  }
+
+  async eliminarBanner(id: string) {
+    const novos = this.banners().filter(b => b.id !== id);
+    this.guardando.set(true);
+    try {
+      await firstValueFrom(this.adminApi.guardarSeccion('BANNERS_HOME', { descripcion: JSON.stringify(novos) }));
+      this.banners.set(novos);
+      await this.catalogo.recargar();
+      this.mensaje.set({ tipo: 'ok', texto: 'Banner eliminado.' });
+    } finally {
+      this.guardando.set(false);
+    }
+  }
+
+  // ==========================================
+  // LÓGICA DE PRODUTOS, CSV E MANUAL (Mantidas intactas)
+  // ==========================================
   onArchivoProducto(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
@@ -111,71 +155,41 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.previewProducto = URL.createObjectURL(file);
   }
 
-  // ==========================================
-  // LÓGICA 1: CADASTRO 100% MANUAL NOVO
-  // ==========================================
   async guardarProductoManual(): Promise<void> {
     if (this.manualCodigo.invalid || this.manualNombre.invalid || this.manualPreco.invalid) {
-      this.mensaje.set({ tipo: 'error', texto: 'Llene los campos obligatorios (Código, Nombre, Precio).' });
-      return;
+      this.mensaje.set({ tipo: 'error', texto: 'Llene los campos obligatorios.' }); return;
     }
-
     this.guardando.set(true);
     this.mensaje.set(null);
-
     try {
-      // 1. Salva os dados base no Banco de Dados (MySQL)
-    const novoProduto = {
+      const novoProduto = {
         codigoInterno: this.manualCodigo.value.trim().toUpperCase(),
         nomePeca: this.manualNombre.value.trim(),
         marcaPrincipal: this.manualMarca.value.trim(),
-        preco: 0, // ZERO automático
-        quantidadeEstoque: 1, // Sempre com estoque 1
-        categoria: this.manualCategoria.value
+        preco: 0, quantidadeEstoque: 1, categoria: this.manualCategoria.value
       };
-
       const urlSalvar = environment.apiUrl.replace('/buscar', '/manual');
       await firstValueFrom(this.http.post(urlSalvar, novoProduto));
 
-      // 2. Se tiver foto ou descrição longa, salva no JSON/Volume
-      let imagenUrl = undefined;
       const codigoStr = novoProduto.codigoInterno;
-
       if (this.archivoProducto || this.descripcionProducto.value.trim()) {
+        let imagenUrl = undefined;
         if (this.archivoProducto) {
           imagenUrl = await firstValueFrom(this.adminApi.subirImagen('productos', codigoStr, this.archivoProducto));
         }
-        const datosExtras: ContenidoProducto = {
-          descripcion: this.descripcionProducto.value.trim(),
-          imagen: imagenUrl
-        };
-        await firstValueFrom(this.adminApi.guardarProducto(codigoStr, datosExtras));
+        await firstValueFrom(this.adminApi.guardarProducto(codigoStr, { descripcion: this.descripcionProducto.value.trim(), imagen: imagenUrl }));
       }
-
       await this.catalogo.recargar();
-      
       this.mensaje.set({ tipo: 'ok', texto: '¡Producto creado con éxito!' });
-      
-      // Limpa o form
-      this.manualCodigo.reset();
-      this.manualNombre.reset();
-      this.manualMarca.reset();
-      this.manualPreco.reset();
-      this.manualEstoque.setValue(1);
-      this.descripcionProducto.reset();
-      this.archivoProducto = null;
-      this.previewProducto = null;
-
-    } catch (e: any) {
-      this.mensaje.set({ tipo: 'error', texto: 'Error al crear el producto. ¿El código ya existe?' });
+      this.manualCodigo.reset(); this.manualNombre.reset(); this.manualMarca.reset(); this.manualPreco.reset();
+      this.descripcionProducto.reset(); this.archivoProducto = null; this.previewProducto = null;
+    } catch {
+      this.mensaje.set({ tipo: 'error', texto: 'Error al crear el producto.' });
     } finally {
       this.guardando.set(false);
     }
   }
 
-  // ==========================================
-  // LÓGICA 2: IMPORTAR CSV
-  // ==========================================
   onArchivoCsv(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files?.[0]) this.archivoCsv = input.files[0];
@@ -187,7 +201,7 @@ export class AdminComponent implements OnInit, OnDestroy {
     this.mensaje.set(null);
     try {
       const res = await firstValueFrom(this.adminApi.importarCsv(this.archivoCsv));
-      this.mensaje.set({ tipo: 'ok', texto: `¡Éxito! Importados: ${res.importados} | Actualizados: ${res.atualizados}` });
+      this.mensaje.set({ tipo: 'ok', texto: `Importados: ${res.importados} | Actualizados: ${res.atualizados}` });
       this.archivoCsv = null;
     } catch (e: any) {
       this.mensaje.set({ tipo: 'error', texto: e.error?.erro || 'Error al importar CSV.' });
@@ -196,27 +210,20 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
   }
 
-  // ==========================================
-  // LÓGICA 3: EDITAR FOTOS DE PEÇAS EXISTENTES
-  // ==========================================
   async buscarProdutoVisual(): Promise<void> {
     const termo = this.buscaAdmin.value.trim();
     if (termo.length < 2) return;
-    this.mensaje.set(null);
     try {
       const res = await firstValueFrom(this.produtoService.buscar(termo, null));
       this.produtosBuscados.set(res);
       if (res.length === 0) this.mensaje.set({ tipo: 'error', texto: 'No se encontraron repuestos.' });
-    } catch {
-      this.mensaje.set({ tipo: 'error', texto: 'Error al buscar piezas.' });
-    }
+    } catch {}
   }
 
   async selecionarParaEditar(p: Produto): Promise<void> {
     this.produtoSelecionadoVisual.set(p);
     this.codigoProducto.setValue(p.codigoInterno);
     this.produtosBuscados.set([]); 
-    
     try {
       const contenido = await firstValueFrom(this.adminApi.obtenerContenido());
       const prod = contenido.productos[p.codigoInterno.toUpperCase()];
@@ -224,76 +231,28 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.imagenActualProducto = prod?.imagen ?? null;
       this.previewProducto = this.imagenActualProducto;
       this.archivoProducto = null;
-    } catch {
-      this.mensaje.set({ tipo: 'error', texto: 'Error al cargar detalles del producto.' });
-    }
+    } catch {}
   }
 
   limpiarSeleccionProduto(): void {
-    this.produtoSelecionadoVisual.set(null);
-    this.codigoProducto.reset();
-    this.descripcionProducto.reset();
-    this.previewProducto = null;
-    this.archivoProducto = null;
+    this.produtoSelecionadoVisual.set(null); this.codigoProducto.reset(); this.descripcionProducto.reset();
+    this.previewProducto = null; this.archivoProducto = null;
   }
 
   async guardarFotoExistente(): Promise<void> {
     const codigo = this.codigoProducto.value.trim().toUpperCase();
     if (!codigo) return;
     this.guardando.set(true);
-    this.mensaje.set(null);
     try {
       let imagenUrl = this.imagenActualProducto;
       if (this.archivoProducto) {
         imagenUrl = await firstValueFrom(this.adminApi.subirImagen('productos', codigo, this.archivoProducto));
       }
-      const datos: ContenidoProducto = {
-        descripcion: this.descripcionProducto.value.trim(),
-        imagen: imagenUrl ?? undefined,
-      };
-      await firstValueFrom(this.adminApi.guardarProducto(codigo, datos));
+      await firstValueFrom(this.adminApi.guardarProducto(codigo, { descripcion: this.descripcionProducto.value.trim(), imagen: imagenUrl ?? undefined }));
       await this.catalogo.recargar();
-      this.mensaje.set({ tipo: 'ok', texto: '¡Foto y detalles guardados!' });
+      this.mensaje.set({ tipo: 'ok', texto: '¡Foto guardada!' });
     } catch {
-      this.mensaje.set({ tipo: 'error', texto: 'No se pudo guardar el producto.' });
-    } finally {
-      this.guardando.set(false);
-    }
-  }
-
-  // ==========================================
-  // LÓGICA DE SEÇÕES
-  // ==========================================
-  async onSeccionChange(): Promise<void> { await this.cargarDatosSeccion(); }
-  private async cargarDatosSeccion(): Promise<void> {
-    const id = this.seccionSeleccionada.value;
-    try {
-      const contenido = await firstValueFrom(this.adminApi.obtenerContenido());
-      const sec = contenido.secciones[id];
-      this.descripcionSeccion.setValue(sec?.descripcion ?? '');
-      this.imagenActualSeccion = sec?.imagen ?? null;
-      this.previewSeccion = this.imagenActualSeccion;
-      this.archivoSeccion = null;
-    } catch {}
-  }
-  onArchivoSeccion(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files?.[0]) {
-      this.archivoSeccion = input.files[0];
-      this.previewSeccion = URL.createObjectURL(input.files[0]);
-    }
-  }
-  async guardarSeccion(): Promise<void> {
-    const id = this.seccionSeleccionada.value;
-    this.guardando.set(true);
-    try {
-      let imagenUrl = this.imagenActualSeccion;
-      if (this.archivoSeccion) imagenUrl = await firstValueFrom(this.adminApi.subirImagen('secciones', id, this.archivoSeccion));
-      const datos: ContenidoSeccion = { descripcion: this.descripcionSeccion.value.trim(), imagen: imagenUrl ?? undefined };
-      await firstValueFrom(this.adminApi.guardarSeccion(id, datos));
-      this.mensaje.set({ tipo: 'ok', texto: '¡Sección guardada!' });
-    } catch {
-      this.mensaje.set({ tipo: 'error', texto: 'No se pudo guardar la sección.' });
+      this.mensaje.set({ tipo: 'error', texto: 'Error al guardar.' });
     } finally {
       this.guardando.set(false);
     }

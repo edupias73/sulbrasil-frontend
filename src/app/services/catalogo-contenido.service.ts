@@ -2,14 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject, signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../environments/environment';
-import {
-  CatalogoContenido,
-  ContenidoProducto,
-  ContenidoSeccion,
-} from '../models/catalogo-contenido.model';
+import { CatalogoContenido, ContenidoProducto, ContenidoSeccion } from '../models/catalogo-contenido.model';
 import { Produto } from '../models/produto.model';
 
 const FALLBACK_URL = '/data/catalogo-contenido.json';
+
+// NOVA INTERFACE PARA O CARROSSEL
+export interface BannerCarousel {
+  id: string;
+  tipo: 'imagen' | 'video';
+  url: string;
+}
 
 @Injectable({ providedIn: 'root' })
 export class CatalogoContenidoService {
@@ -19,11 +22,8 @@ export class CatalogoContenidoService {
 
   async cargar(): Promise<void> {
     if (this.cargado) return;
-
     try {
-      const data = await firstValueFrom(
-        this.http.get<CatalogoContenido>(environment.catalogoContenidoUrl),
-      );
+      const data = await firstValueFrom(this.http.get<CatalogoContenido>(environment.catalogoContenidoUrl));
       this.contenido.set(this.normalizar(data));
     } catch {
       try {
@@ -72,5 +72,16 @@ export class CatalogoContenidoService {
 
   descripcionSeccion(seccionId: string): string | null {
     return this.obtenerSeccion(seccionId)?.descripcion ?? null;
+  }
+
+  // NOVA FUNÇÃO: Lê os Banners escondidos dentro de uma seção especial
+  obtenerBanners(): BannerCarousel[] {
+    const sec = this.contenido().secciones['BANNERS_HOME'];
+    if (!sec || !sec.descripcion) return [];
+    try {
+      return JSON.parse(sec.descripcion);
+    } catch {
+      return [];
+    }
   }
 }

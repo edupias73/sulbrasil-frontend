@@ -1,16 +1,8 @@
-import { Component, DestroyRef, OnDestroy, OnInit, effect, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { Component, OnDestroy, OnInit, effect, inject, signal, computed } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
-import {
-  catchError,
-  combineLatest,
-  debounceTime,
-  distinctUntilChanged,
-  of,
-  startWith,
-  switchMap,
-  tap,
-} from 'rxjs';
+import { RouterLink } from '@angular/router';
+import { debounceTime, distinctUntilChanged } from 'rxjs';
 import { SECCIONES_CATALOGO, obtenerSeccion } from '../../config/secciones.config';
 import { environment } from '../../../environments/environment';
 import { Produto } from '../../models/produto.model';
@@ -23,25 +15,12 @@ import { ProductoDetalleComponent } from '../producto-detalle/producto-detalle.c
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [ReactiveFormsModule, ProductoDetalleComponent, MenuSeccionesComponent],
+  imports: [ReactiveFormsModule, RouterLink, ProductoDetalleComponent, MenuSeccionesComponent],
   templateUrl: './home.component.html',
 })
 export class HomeComponent implements OnInit, OnDestroy {
   private readonly produtoService = inject(ProdutoService);
   private readonly contenidoService = inject(CatalogoContenidoService);
-  private readonly destroyRef = inject(DestroyRef);
-
-  constructor() {
-    effect(() => {
-      const bloquear =
-        this.menuAbierto() || this.carritoAbierto() || this.produtoSeleccionado() !== null;
-      document.body.style.overflow = bloquear ? 'hidden' : '';
-    });
-  }
-
-  ngOnDestroy(): void {
-    document.body.style.overflow = '';
-  }
 
   readonly carrito = inject(CarritoService);
   readonly secciones = SECCIONES_CATALOGO;
@@ -58,115 +37,109 @@ export class HomeComponent implements OnInit, OnDestroy {
   readonly mensajeExito = signal<string | null>(null);
   readonly seccionActiva = signal<string | null>(null);
 
+  readonly banners = computed(() => this.contenidoService.obtenerBanners());
+  readonly slideActivo = signal(0);
+  private carouselInterval: any;
+
+  constructor() {
+    // Trava o fundo da tela se um menu ou produto estiver aberto
+    effect(() => {
+      const bloquear = this.menuAbierto() || this.carritoAbierto() || this.produtoSeleccionado() !== null;
+      document.body.style.overflow = bloquear ? 'hidden' : '';
+    });
+
+    // Escuta o que o usuário digita na barra de pesquisa sem quebrar o Angular
+    this.busqueda.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      takeUntilDestroyed()
+    ).subscribe(termo => {
+      this.executarBusca(termo, this.seccionActiva());
+    });
+  }
+
   ngOnInit(): void {
     void this.contenidoService.cargar();
 
-    combineLatest([
-      this.busqueda.valueChanges.pipe(startWith(''), debounceTime(300), distinctUntilChanged()),
-      toObservable(this.seccionActiva),
-    ])
-      .pipe(
-        tap(() => this.error.set(null)),
-        tap(([termo, categoria]) => {
-          const t = termo.trim();
-          if (t.length < 2 && !categoria) {
-            this.productos.set([]);
-            this.cargando.set(false);
-          }
-        }),
-        tap(([termo, categoria]) => {
-          const t = termo.trim();
-          if (t.length >= 2 || categoria) {
-            this.cargando.set(true);
-          }
-        }),
-        switchMap(([termo, categoria]) => {
-          const t = termo.trim();
-          if (t.length < 2 && !categoria) {
-            return of([] as Produto[]);
-          }
-          return this.produtoService.buscar(t, categoria).pipe(
-            catchError(() => {
-              this.error.set(
-                'No se pudo conectar con el catálogo. Verifique que el servidor esté activo.',
-              );
-              return of([] as Produto[]);
-            }),
-          );
-        }),
-        takeUntilDestroyed(this.destroyRef),
-      )
-      .subscribe((lista) => {
-        this.productos.set(lista);
-        this.cargando.set(false);
+    // Timer do Carrossel (Gira os banners a cada 5 segundos)
+    this.carouselInterval = setInterval(() => {
+      const total = this.banners().length;
+      if (total > 1) {
+        this.slideActivo.update(v => (v + 1) % total);
+      }
+    }, 5000);
+  }
+
+  ngOnDestroy(): void {
+    document.body.style.overflow = '';
+    if (this.carouselInterval) clearInterval(this.carouselInterval);
+  }
+
+  // ==========================================
+  // O NOVO MOTOR DE BUSCA (À prova de falhas)
+  // ==========================================
+  executarBusca(termo: string, categoria: string | null): void {
+    const t = termo.trim();
+    
+    if (t.length < 2 && !categoria) {
+      this.productos.set([]);
+      this.cargando.set(false);
+      return;
+    }
+
+    // O truque de mestre: setTimeout(..., 0) tira a ação do ciclo principal, evitando o erro NG0100!
+    setTimeout(() => {
+      this.cargando.set(true);
+      this.error.set(null);
+
+      this.produtoService.buscar(t, categoria).subscribe({
+        next: (lista) => {
+          this.productos.set(lista);
+          this.cargando.set(false);
+        },
+        error: () => {
+          this.error.set('No se pudo conectar con el catálogo.');
+          this.productos.set([]);
+          this.cargando.set(false);
+        }
       });
-  }
-
-  seccionActual() {
-    return obtenerSeccion(this.seccionActiva());
-  }
-
-  imagenSeccionActiva(): string | null {
-    const id = this.seccionActiva();
-    return id ? this.contenidoService.imagenSeccion(id) : null;
-  }
-
-  descripcionSeccionActiva(): string | null {
-    const id = this.seccionActiva();
-    return id ? this.contenidoService.descripcionSeccion(id) : null;
-  }
-
-  abrirMenu(): void {
-    this.menuAbierto.set(true);
-  }
-
-  cerrarMenu(): void {
-    this.menuAbierto.set(false);
+    }, 0);
   }
 
   seleccionarSeccion(id: string | null): void {
     this.seccionActiva.set(id);
+    this.cerrarMenu(); // Fecha o menu lateral do celular ao clicar
+    this.executarBusca(this.busqueda.value, id);
   }
 
-  abrirDetalle(produto: Produto): void {
-    this.produtoSeleccionado.set(produto);
+  // ==========================================
+  // FUNÇÕES DE TELA
+  // ==========================================
+  mudarSlide(index: number) { this.slideActivo.set(index); }
+  seccionActual() { return obtenerSeccion(this.seccionActiva()); }
+  imagenSeccionActiva() { const id = this.seccionActiva(); return id ? this.contenidoService.imagenSeccion(id) : null; }
+  descripcionSeccionActiva() { const id = this.seccionActiva(); return id ? this.contenidoService.descripcionSeccion(id) : null; }
+  abrirMenu() { this.menuAbierto.set(true); }
+  cerrarMenu() { this.menuAbierto.set(false); }
+  abrirDetalle(p: Produto) { this.produtoSeleccionado.set(p); }
+  cerrarDetalle() { this.produtoSeleccionado.set(null); }
+  
+  onAgregadoAlCarrito(): void { 
+    this.mensajeExito.set('¡Producto añadido a la lista!'); 
+    setTimeout(() => this.mensajeExito.set(null), 2500); 
   }
-
-  cerrarDetalle(): void {
-    this.produtoSeleccionado.set(null);
+  
+  toggleCarrito() { this.carritoAbierto.update(v => !v); }
+  cerrarCarrito() { this.carritoAbierto.set(false); }
+  enviarWhatsApp() { this.carrito.enviarPedidoWhatsApp(this.whatsappNumero); }
+  formatearPrecio(v: number) { return this.carrito.formatearPrecio(v); }
+  imagenProducto(p: Produto) { return p.urlImagen ?? null; }
+  
+  mostrarEstadoVacio() { 
+    return this.busqueda.value.trim().length < 2 && !this.seccionActiva(); 
   }
-
-  onAgregadoAlCarrito(): void {
-    this.mensajeExito.set('¡Producto añadido al carrito!');
-    setTimeout(() => this.mensajeExito.set(null), 2500);
-  }
-
-  toggleCarrito(): void {
-    this.carritoAbierto.update((v) => !v);
-  }
-
-  cerrarCarrito(): void {
-    this.carritoAbierto.set(false);
-  }
-
-  enviarWhatsApp(): void {
-    this.carrito.enviarPedidoWhatsApp(this.whatsappNumero);
-  }
-
-  formatearPrecio(valor: number): string {
-    return this.carrito.formatearPrecio(valor);
-  }
-
-  imagenProducto(produto: Produto): string | null {
-    return produto.urlImagen ?? null;
-  }
-
-  mostrarEstadoVacio(): boolean {
-    const t = this.busqueda.value.trim();
-    return t.length < 2 && !this.seccionActiva();
-  }
-
-  mostrarSinResultados(): boolean {
-    return !this.cargando() && this.productos().length === 0 && !this.error() && !this.mostrarEstadoVacio();
+  
+  mostrarSinResultados() { 
+    return !this.cargando() && this.productos().length === 0 && !this.error() && !this.mostrarEstadoVacio(); 
   }
 }
