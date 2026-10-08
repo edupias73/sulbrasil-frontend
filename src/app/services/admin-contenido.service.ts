@@ -41,7 +41,13 @@ export class AdminContenidoService {
       { headers: this.headersAdmin() },
     );
   }
-
+  
+eliminarProducto(codigoInterno: string): Observable<void> {
+    return this.http.delete<void>(
+      `${environment.adminApiUrl}/productos/${encodeURIComponent(codigoInterno)}`,
+      { headers: this.headersAdmin() }
+    );
+  }
 
   importarCsv(archivo: File): Observable<any> {
     const form = new FormData();

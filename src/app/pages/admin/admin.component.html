@@ -1,6 +1,5 @@
 <div class="min-h-[100dvh] bg-slate-50">
-  
-  <!-- TELA DE LOGIN (Fundo em Degradê Profissional) -->
+  <!-- TELA DE LOGIN (Mantida) -->
   @if (!autenticado()) {
     <div class="flex min-h-[100dvh] flex-col items-center justify-center px-4 py-8 bg-gradient-to-br from-brand-navy-900 to-blue-900">
       <div class="w-full max-w-sm rounded-2xl bg-white p-8 shadow-2xl">
@@ -10,133 +9,51 @@
           </div>
           <h1 class="text-2xl font-extrabold text-slate-800">Panel Admin</h1>
         </div>
-        
         <label class="block mb-6">
           <span class="text-xs font-bold uppercase tracking-wider text-slate-500">PIN de Seguridad</span>
           <input type="password" inputmode="numeric" maxlength="8" [formControl]="pinInput" (keydown.enter)="ingresar()" placeholder="••••" class="mt-2 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-4 text-center text-3xl tracking-[0.5em] focus:border-brand-amber focus:bg-white outline-none transition-colors" />
         </label>
-
         @if (mensaje(); as m) {
-          <p class="mb-6 rounded-lg px-4 py-3 text-center text-sm font-bold shadow-sm" [class]="m.tipo === 'ok' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-            {{ m.texto }}
-          </p>
+          <p class="mb-6 rounded-lg px-4 py-3 text-center text-sm font-bold shadow-sm" [class]="m.tipo === 'ok' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">{{ m.texto }}</p>
         }
-
         <button type="button" (click)="ingresar()" class="w-full rounded-xl bg-brand-navy-800 py-4 text-lg font-bold text-white shadow-lg hover:bg-brand-navy-900 transition mb-4">Ingresar</button>
-        <a routerLink="/" class="flex w-full items-center justify-center rounded-xl border-2 border-slate-200 bg-white py-4 text-sm font-bold text-slate-600 hover:bg-slate-50 transition">
-          <i class="fa-solid fa-arrow-left mr-2"></i> Volver a la Tienda
-        </a>
+        <a routerLink="/" class="flex w-full items-center justify-center rounded-xl border-2 border-slate-200 bg-white py-4 text-sm font-bold text-slate-600 hover:bg-slate-50 transition"><i class="fa-solid fa-arrow-left mr-2"></i> Volver</a>
       </div>
     </div>
-
-  <!-- PAINEL LOGADO -->
   } @else {
     <header class="safe-top sticky top-0 z-40 bg-brand-navy-900 shadow-md">
-      <div class="safe-x mx-auto flex max-w-2xl items-center justify-between px-4 py-4 text-white">
+      <div class="safe-x mx-auto flex max-w-5xl items-center justify-between px-4 py-4 text-white">
         <div class="flex items-center gap-3">
           <i class="fa-solid fa-shield-halved text-brand-amber text-2xl"></i>
           <div><h1 class="text-lg font-bold leading-tight">Admin Sulbrasil</h1></div>
         </div>
         <button type="button" (click)="salir()" class="rounded-lg bg-white/10 px-4 py-2 text-sm font-bold hover:bg-white/20 transition">Salir</button>
       </div>
-      
       <!-- TABS -->
-      <div class="safe-x mx-auto max-w-2xl px-4 pb-0 flex gap-1 overflow-x-auto hide-scrollbar">
-        <button (click)="cambiarTab('manual')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'manual' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
-          <i class="fa-solid fa-plus mr-1"></i> Crear
-        </button>
-        <button (click)="cambiarTab('productos')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'productos' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
-          <i class="fa-solid fa-camera mr-1"></i> Fotos
-        </button>
-        <button (click)="cambiarTab('csv')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'csv' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
-          <i class="fa-solid fa-file-csv mr-1"></i> Excel
-        </button>
-        <button (click)="cambiarTab('banners')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'banners' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'">
-          <i class="fa-solid fa-images mr-1"></i> Carrusel
-        </button>
+      <div class="safe-x mx-auto max-w-5xl px-4 pb-0 flex gap-1 overflow-x-auto hide-scrollbar">
+        <button (click)="cambiarTab('gestion')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'gestion' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'"><i class="fa-solid fa-box-open mr-1"></i> Gestión</button>
+        <button (click)="cambiarTab('csv')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'csv' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'"><i class="fa-solid fa-file-csv mr-1"></i> Excel</button>
+        <button (click)="cambiarTab('banners')" class="whitespace-nowrap rounded-t-xl px-4 py-3 text-sm font-bold transition-colors" [class]="tab() === 'banners' ? 'bg-slate-50 text-brand-navy-900' : 'bg-brand-navy-800 text-slate-300 hover:bg-white/10'"><i class="fa-solid fa-images mr-1"></i> Carrusel</button>
       </div>
     </header>
 
-    <main class="safe-x mx-auto max-w-2xl px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))]">
+    <main class="safe-x mx-auto max-w-5xl px-4 py-6 pb-[calc(5rem+env(safe-area-inset-bottom))]">
       @if (mensaje(); as m) {
         <div class="mb-6 rounded-xl px-4 py-4 text-sm font-bold shadow-sm flex items-start gap-3" [class]="m.tipo === 'ok' ? 'bg-green-100 border border-green-200 text-green-800' : 'bg-red-100 border border-red-200 text-red-800'">
           <span class="flex-1">{{ m.texto }}</span>
         </div>
       }
 
-      <!-- ABA 1: CRIAR PEÇA MANUAL -->
-      @if (tab() === 'manual') {
-        <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 space-y-4">
-          <h2 class="text-xl font-bold text-slate-800 mb-2"><i class="fa-solid fa-box mr-2 text-brand-amber-dark"></i> Nuevo Producto</h2>
-          
-          <div class="grid grid-cols-2 gap-4">
-            <label class="block">
-              <span class="text-xs font-bold text-slate-600">Código *</span>
-              <input type="text" [formControl]="manualCodigo" placeholder="Ej: SB-123" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 uppercase focus:border-brand-amber outline-none" />
-            </label>
-            <label class="block">
-              <span class="text-xs font-bold text-slate-600">Precio (Gs) *</span>
-              <input type="number" [formControl]="manualPreco" placeholder="0" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
-            </label>
-          </div>
-
-          <label class="block">
-            <span class="text-xs font-bold text-slate-600">Nombre de la Pieza *</span>
-            <input type="text" [formControl]="manualNombre" placeholder="Ej: Alternador 12V..." class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
-          </label>
-
-          <div class="grid grid-cols-2 gap-4">
-            <label class="block">
-              <span class="text-xs font-bold text-slate-600">Marca</span>
-              <input type="text" [formControl]="manualMarca" placeholder="Ej: Bosch" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
-            </label>
-            <label class="block">
-              <span class="text-xs font-bold text-slate-600">Stock</span>
-              <input type="number" [formControl]="manualEstoque" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
-            </label>
-          </div>
-
-          <label class="block">
-            <span class="text-xs font-bold text-slate-600">Categoría</span>
-            <select [formControl]="manualCategoria" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none">
-              @for (s of secciones; track s.id) { <option [value]="s.id">{{ s.nombre }}</option> }
-            </select>
-          </label>
-
-          <hr class="my-4 border-slate-200">
-          <h3 class="text-sm font-bold text-slate-800"><i class="fa-solid fa-image mr-1 text-slate-400"></i> Imagen y Detalles (Opcional)</h3>
-
-          <div>
-            @if (previewProducto) {
-              <div class="relative mb-3 overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
-                <img [src]="previewProducto" class="mx-auto max-h-40 w-full object-contain p-2 mix-blend-multiply" />
-              </div>
-            }
-            <label class="flex items-center justify-center w-full rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 transition py-4 px-4 cursor-pointer text-blue-700 font-bold text-sm">
-              <i class="fa-solid fa-camera mr-2"></i> {{ previewProducto ? 'Cambiar Foto' : 'Tomar Foto' }}
-              <input type="file" accept="image/jpeg,image/png,image/webp" capture="environment" (change)="onArchivoProducto($event)" class="hidden" />
-            </label>
-          </div>
-
-          <textarea [formControl]="descripcionProducto" rows="2" placeholder="Notas, aplicaciones..." class="w-full resize-none rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-brand-amber outline-none"></textarea>
-
-          <button type="button" (click)="guardarProductoManual()" [disabled]="guardando()" class="mt-4 w-full rounded-xl bg-brand-whatsapp py-4 text-lg font-bold text-white shadow-lg disabled:bg-slate-300 hover:bg-brand-whatsapp-dark transition">
-            {{ guardando() ? 'Guardando...' : 'Crear Producto' }}
-          </button>
-        </section>
-      }
-
-      <!-- ABA 2: EDITAR FOTOS EXISTENTES -->
-      @if (tab() === 'productos') {
-        @if (!produtoSelecionadoVisual()) {
-          <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 class="text-lg font-bold text-slate-800 mb-4"><i class="fa-solid fa-magnifying-glass mr-2 text-slate-400"></i> Buscar pieza para editar</h2>
+      <!-- ABA GESTIÓN (CRIAR/EDITAR + LIVE PREVIEW) -->
+      @if (tab() === 'gestion') {
+        <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 mb-6">
+          @if (!modoEdicion()) {
             <div class="flex gap-2 mb-6">
-              <input type="text" [formControl]="buscaAdmin" (keydown.enter)="buscarProdutoVisual()" placeholder="Nombre o código..." class="flex-1 rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-brand-amber" />
-              <button type="button" (click)="buscarProdutoVisual()" class="rounded-xl bg-brand-navy-800 px-5 font-bold text-white hover:bg-brand-navy-900"><i class="fa-solid fa-arrow-right"></i></button>
+              <input type="text" [formControl]="buscaAdmin" (keydown.enter)="buscarProdutoVisual()" placeholder="Buscar pieza para editar..." class="flex-1 rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 outline-none focus:border-brand-amber" />
+              <button type="button" (click)="buscarProdutoVisual()" class="rounded-xl bg-brand-navy-800 px-5 font-bold text-white hover:bg-brand-navy-900"><i class="fa-solid fa-magnifying-glass"></i></button>
             </div>
             @if (produtosBuscados().length > 0) {
-              <div class="space-y-3">
+              <div class="space-y-3 mb-6 border-b pb-6">
                 @for (p of produtosBuscados(); track p.id) {
                   <button type="button" (click)="selecionarParaEditar(p)" class="w-full text-left flex flex-col rounded-xl border border-slate-200 bg-white p-4 shadow-sm hover:border-brand-amber">
                     <span class="font-mono text-xs font-bold text-orange-600">{{ p.codigoInterno }}</span>
@@ -145,33 +62,167 @@
                 }
               </div>
             }
-          </section>
-        } @else {
-          <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 space-y-4">
-            <div class="flex items-start justify-between border-b pb-4">
-              <div>
-                <p class="font-mono text-xs font-bold text-brand-amber-dark">{{ produtoSelecionadoVisual()?.codigoInterno }}</p>
-                <h2 class="text-sm font-bold text-slate-800">{{ produtoSelecionadoVisual()?.nomePeca }}</h2>
+          } @else {
+            <div class="flex items-center justify-between mb-6 bg-blue-50 p-4 rounded-xl border border-blue-100">
+              <p class="font-bold text-brand-navy-800"><i class="fa-solid fa-pen-to-square mr-2"></i> Editando pieza existente</p>
+              <button type="button" (click)="cancelarEdicion()" class="text-sm font-bold text-blue-600 hover:text-brand-navy-900">Cancelar Edición</button>
+            </div>
+          }
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Coluna 1: Formulário -->
+            <div class="space-y-4">
+              <div class="grid grid-cols-2 gap-4">
+                <label class="block">
+                  <span class="text-xs font-bold text-slate-600">Código *</span>
+                  <input type="text" [formControl]="manualCodigo" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 uppercase focus:border-brand-amber outline-none disabled:opacity-50 disabled:cursor-not-allowed" />
+                </label>
+                <label class="block">
+                  <span class="text-xs font-bold text-slate-600">Precio (Gs) *</span>
+                  <input type="number" [formControl]="manualPreco" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+                </label>
               </div>
-              <button (click)="limpiarSeleccionProduto()" class="h-8 w-8 rounded-full bg-slate-100 text-slate-500"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            
-            <div>
-              @if (previewProducto) { <img [src]="previewProducto" class="mx-auto max-h-40 object-contain p-2" /> }
-              <label class="flex items-center justify-center w-full rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-4 cursor-pointer text-blue-700 font-bold">
-                <i class="fa-solid fa-camera mr-2"></i> Tomar Foto
-                <input type="file" accept="image/jpeg,image/png" capture="environment" (change)="onArchivoProducto($event)" class="hidden" />
+              <label class="block">
+                <span class="text-xs font-bold text-slate-600">Nombre de la Pieza *</span>
+                <input type="text" [formControl]="manualNombre" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
               </label>
-            </div>
-            
-            <textarea [formControl]="descripcionProducto" rows="3" placeholder="Descripción pública..." class="w-full rounded-xl border-2 border-slate-200 bg-slate-50 p-3"></textarea>
-            
-            <button type="button" (click)="guardarFotoExistente()" [disabled]="guardando()" class="w-full rounded-xl bg-brand-whatsapp py-4 font-bold text-white">Guardar Cambios</button>
-          </section>
+              <div class="grid grid-cols-2 gap-4">
+                <label class="block">
+                  <span class="text-xs font-bold text-slate-600">Marca</span>
+                  <input type="text" [formControl]="manualMarca" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+                </label>
+                <label class="block">
+                  <span class="text-xs font-bold text-slate-600">Stock</span>
+                  <input type="number" [formControl]="manualEstoque" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none" />
+                </label>
+              </div>
+              <label class="block mb-4">
+                <span class="text-xs font-bold text-slate-600">Categoría</span>
+                <select [formControl]="manualCategoria" class="mt-1 w-full rounded-xl border-2 border-slate-200 bg-slate-50 px-3 py-3 focus:border-brand-amber outline-none">
+                  @for (s of secciones; track s.id) { <option [value]="s.id">{{ s.nombre }}</option> }
+                </select>
+              </label>
+
+              <hr class="border-slate-200">
+              
+           <div class="space-y-3 mb-4">
+      <h4 class="font-bold text-slate-700 text-sm"><i class="fa-solid fa-images mr-2 text-slate-400"></i>Galería de Fotos</h4>
+      
+      <div class="grid grid-cols-3 sm:grid-cols-4 gap-3">
+        @for(foto of galeriaAdmin(); track $index) {
+          <div class="aspect-square bg-white border border-slate-200 rounded-lg relative group overflow-hidden flex items-center justify-center">
+            <img [src]="construirUrl(foto.url)" class="max-h-full max-w-full object-contain p-1" />
+            <button type="button" (click)="removerFotoGaleria($index)" class="absolute top-1 right-1 bg-red-500 text-white h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm flex items-center justify-center"><i class="fa-solid fa-xmark text-xs"></i></button>
+            @if($index === 0) {
+              <span class="absolute bottom-0 inset-x-0 bg-brand-navy-800 text-white text-[10px] text-center py-0.5 font-bold">Principal</span>
+            }
+          </div>
         }
+        
+        <!-- Botão para adicionar múltiplas fotos -->
+        <label class="aspect-square flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-blue-300 bg-blue-50 hover:bg-blue-100 transition cursor-pointer text-blue-700">
+          <i class="fa-solid fa-plus text-xl mb-1"></i>
+          <span class="text-[10px] font-bold">Añadir</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" multiple (change)="onArchivoProducto($event)" class="hidden" />
+        </label>
+      </div>
+    </div>
+              
+              <textarea [formControl]="descripcionProducto" rows="3" placeholder="Descripción pública y aplicaciones..." class="w-full resize-none rounded-xl border-2 border-slate-200 bg-slate-50 px-4 py-3 text-sm focus:border-brand-amber outline-none"></textarea>
+<!-- BLOCO DE CÓDIGOS OEM E APLICAÇÕES -->
+              <div class="mt-4 border-t border-slate-200 pt-4 space-y-6">
+                
+                <!-- Códigos OEM -->
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                   <div class="flex items-center justify-between bg-slate-100 px-4 py-3 border-b border-slate-200">
+                     <h4 class="font-bold text-slate-700 text-sm"><i class="fa-solid fa-barcode mr-2 text-slate-400"></i>Códigos OEM</h4>
+                     <button type="button" (click)="agregarCodigo()" class="text-xs font-bold bg-white border border-slate-200 px-3 py-1 rounded-md text-brand-navy-700 shadow-sm hover:border-brand-amber transition"><i class="fa-solid fa-plus"></i> Añadir</button>
+                   </div>
+                   <div class="p-4 space-y-2 bg-slate-50">
+                     @if (codigosOem().length === 0) { <p class="text-xs text-slate-400 text-center py-2">Sin códigos OEM.</p> }
+                     @for(c of codigosOem(); track $index) {
+                       <div class="flex gap-2 relative group">
+                         <input type="text" [value]="c.marcaFabricante" (input)="actualizarCodigo($index, 'marcaFabricante', $any($event.target).value)" placeholder="Marca (Ej: Bosch)" class="w-2/5 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-amber">
+                         <input type="text" [value]="c.codigo" (input)="actualizarCodigo($index, 'codigo', $any($event.target).value)" placeholder="Código" class="w-3/5 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-amber font-mono">
+                         <button type="button" (click)="removerCodigo($index)" class="absolute right-[-10px] top-[-10px] bg-red-100 text-red-600 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"><i class="fa-solid fa-xmark text-xs"></i></button>
+                       </div>
+                     }
+                   </div>
+                </div>
+                
+                <!-- Aplicaciones -->
+                <div class="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
+                   <div class="flex items-center justify-between bg-slate-100 px-4 py-3 border-b border-slate-200">
+                     <h4 class="font-bold text-slate-700 text-sm"><i class="fa-solid fa-car mr-2 text-slate-400"></i>Aplicaciones</h4>
+                     <button type="button" (click)="agregarAplicacao()" class="text-xs font-bold bg-white border border-slate-200 px-3 py-1 rounded-md text-brand-navy-700 shadow-sm hover:border-brand-amber transition"><i class="fa-solid fa-plus"></i> Añadir</button>
+                   </div>
+                   <div class="p-4 space-y-3 bg-slate-50">
+                     @if (aplicacoes().length === 0) { <p class="text-xs text-slate-400 text-center py-2">Sin aplicaciones.</p> }
+                     @for(a of aplicacoes(); track $index) {
+                       <div class="flex flex-col gap-2 p-3 bg-white border border-slate-200 shadow-sm rounded-lg relative group">
+                         <button type="button" (click)="removerAplicacao($index)" class="absolute right-[-10px] top-[-10px] bg-red-100 text-red-600 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"><i class="fa-solid fa-xmark text-xs"></i></button>
+                         <div class="flex gap-2">
+                           <input type="text" [value]="a.montadora" (input)="actualizarAplicacao($index, 'montadora', $any($event.target).value)" placeholder="Montadora (Ej: VW)" class="w-1/2 rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-amber">
+                           <input type="text" [value]="a.veiculo" (input)="actualizarAplicacao($index, 'veiculo', $any($event.target).value)" placeholder="Vehículo (Ej: Amarok)" class="w-1/2 rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-amber">
+                         </div>
+                         <div class="flex gap-2">
+                           <input type="number" [value]="a.anoInicio" (input)="actualizarAplicacao($index, 'anoInicio', $any($event.target).value)" placeholder="Año Inicio" class="w-1/2 rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-amber">
+                           <input type="number" [value]="a.anoFim" (input)="actualizarAplicacao($index, 'anoFim', $any($event.target).value)" placeholder="Año Fin" class="w-1/2 rounded-md border border-slate-200 px-3 py-2 text-sm outline-none focus:border-brand-amber">
+                         </div>
+                       </div>
+                     }
+                   </div>
+                </div>
+              </div>
+
+              <div class="flex gap-3 pt-2">
+                <button type="button" (click)="guardarProducto()" [disabled]="guardando()" class="flex-1 rounded-xl bg-brand-whatsapp py-4 text-lg font-bold text-white shadow-lg disabled:bg-slate-300 hover:bg-brand-whatsapp-dark transition">
+                  <i class="fa-solid fa-floppy-disk mr-2"></i> {{ modoEdicion() ? 'Guardar Cambios' : 'Crear Producto' }}
+                </button>
+                @if (modoEdicion()) {
+                  <button type="button" (click)="eliminarProducto()" [disabled]="guardando()" class="px-5 rounded-xl bg-red-100 text-red-600 font-bold hover:bg-red-500 hover:text-white transition">
+                    <i class="fa-solid fa-trash"></i>
+                  </button>
+                }
+              </div>
+            </div>
+
+            <!-- Coluna 2: Live Preview -->
+            <div class="flex flex-col items-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 p-6 justify-start">
+              <span class="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6"><i class="fa-solid fa-eye mr-2"></i>Vista Previa en Vivo</span>
+              
+              <div class="w-full max-w-[240px] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden flex flex-col pointer-events-none">
+                <div class="aspect-square bg-slate-50 p-4 flex items-center justify-center relative">
+                  @if (previewProducto) {
+                    <img [src]="previewProducto" class="max-h-full max-w-full object-contain mix-blend-multiply" />
+                  } @else {
+                    <i class="fa-solid fa-camera text-slate-200 text-5xl"></i>
+                  }
+                  <span class="absolute top-3 left-3 bg-brand-navy-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                    {{ manualCodigo.value || 'CÓDIGO' }}
+                  </span>
+                </div>
+                <div class="p-4 flex flex-col flex-1 border-t border-slate-100">
+                  <span class="text-[11px] font-bold text-brand-amber-dark uppercase tracking-wider mb-1">{{ manualMarca.value || 'Marca' }}</span>
+                  <h4 class="text-sm font-bold text-slate-800 leading-snug mb-3 flex-1">{{ manualNombre.value || 'Nombre del repuesto' }}</h4>
+                  <div class="flex items-end justify-between mt-auto">
+                    <div class="flex flex-col">
+                      <span class="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Precio Unitario</span>
+                      <span class="text-base font-black text-brand-navy-900 leading-none">₲ {{ carrito.formatearPrecio(manualPreco.value || 0) }}</span>
+                    </div>
+                    <div class="h-10 w-10 shrink-0 rounded-full bg-slate-100 text-brand-navy-700 flex items-center justify-center">
+                      <i class="fa-solid fa-cart-plus"></i>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-4 text-center">Así es exactamente como el cliente verá la pieza en la tienda.</p>
+            </div>
+          </div>
+        </section>
       }
 
-      <!-- ABA 3: CSV -->
+      <!-- ABA CSV (Mantida) -->
       @if (tab() === 'csv') {
         <section class="rounded-2xl border border-slate-200 bg-white p-6 text-center">
           <i class="fa-solid fa-file-excel text-5xl text-green-600 mb-4"></i>
@@ -185,52 +236,54 @@
         </section>
       }
 
-      <!-- ABA 4: BANNERS (CARRUSEL) -->
+      <!-- ABA BANNERS + LIVE PREVIEW DO CARRUSEL -->
       @if (tab() === 'banners') {
         <section class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden p-6 space-y-6">
-          <div class="text-center mb-4">
-            <h2 class="text-xl font-bold text-slate-800"><i class="fa-solid fa-layer-group mr-2 text-brand-amber-dark"></i> Carrusel Principal</h2>
-            <p class="text-sm text-slate-500 mt-1">Añada fotos o videos cortos para destacar en la página de inicio.</p>
-          </div>
-
           <div class="grid grid-cols-2 gap-4">
-            <label class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-6 cursor-pointer hover:bg-blue-100 transition text-blue-700">
-              <i class="fa-solid fa-image text-3xl mb-2"></i>
-              <span class="font-bold text-sm">Subir Imagen</span>
+            <label class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-blue-300 bg-blue-50 py-6 cursor-pointer hover:bg-blue-100 text-blue-700">
+              <i class="fa-solid fa-image text-3xl mb-2"></i><span class="font-bold text-sm">Subir Imagen</span>
               <input type="file" accept="image/jpeg,image/png,image/webp" (change)="subirBanner($event, 'imagen')" class="hidden" [disabled]="guardando()" />
             </label>
-            
-            <label class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-purple-300 bg-purple-50 py-6 cursor-pointer hover:bg-purple-100 transition text-purple-700">
-              <i class="fa-solid fa-video text-3xl mb-2"></i>
-              <span class="font-bold text-sm">Subir Video (MP4)</span>
+            <label class="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-purple-300 bg-purple-50 py-6 cursor-pointer hover:bg-purple-100 text-purple-700">
+              <i class="fa-solid fa-video text-3xl mb-2"></i><span class="font-bold text-sm">Subir Video</span>
               <input type="file" accept="video/mp4" (change)="subirBanner($event, 'video')" class="hidden" [disabled]="guardando()" />
             </label>
           </div>
 
-          <hr class="border-slate-200 my-4">
+          <div class="mt-6">
+            <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-4">Vista Previa del Carrusel</h3>
+            <div class="w-full h-[200px] sm:h-[300px] rounded-2xl overflow-hidden shadow-lg bg-black relative flex items-center justify-center">
+              @if (banners().length > 0) {
+                @if (banners()[0].tipo === 'video') {
+                  <video [src]="banners()[0].url" autoplay loop muted class="w-full h-full object-cover opacity-60"></video>
+                } @else {
+                  <img [src]="banners()[0].url" class="w-full h-full object-cover opacity-60" />
+                }
+              } @else {
+                <div class="w-full h-full bg-brand-navy-900 flex items-center justify-center text-white font-bold opacity-80">Banner Padrão Azul</div>
+              }
+              <div class="absolute inset-0 flex flex-col items-center justify-center z-10 pointer-events-none">
+                 <h2 class="text-2xl sm:text-4xl font-extrabold text-white drop-shadow-md">Así se verá en la tienda</h2>
+              </div>
+            </div>
+          </div>
 
+          <hr class="border-slate-200">
           <div class="space-y-4">
-            <h3 class="font-bold text-slate-700">Banners Activos</h3>
-            @if (banners().length === 0) {
-              <p class="text-sm text-slate-400 text-center py-4">No hay banners. Se mostrará el fondo azul por defecto.</p>
-            }
+            <h3 class="font-bold text-slate-700">Administrar Slides Activos</h3>
             @for (b of banners(); track b.id; let i = $index) {
               <div class="flex items-center gap-4 rounded-xl border border-slate-200 p-3 bg-slate-50 shadow-sm">
                 <div class="h-16 w-24 rounded-lg overflow-hidden bg-black flex items-center justify-center shrink-0 relative">
                   @if (b.tipo === 'video') {
                     <video [src]="b.url" class="h-full w-full object-cover opacity-80" muted></video>
                     <i class="fa-solid fa-play absolute text-white text-xl"></i>
-                  } @else {
-                    <img [src]="b.url" class="h-full w-full object-cover">
-                  }
+                  } @else { <img [src]="b.url" class="h-full w-full object-cover"> }
                 </div>
                 <div class="flex-1">
                   <p class="font-bold text-sm text-slate-800">Slide {{ i + 1 }}</p>
                   <p class="text-xs text-slate-500 uppercase">{{ b.tipo }}</p>
                 </div>
-                <button (click)="eliminarBanner(b.id)" class="h-10 w-10 rounded-full bg-white text-red-500 shadow-sm border border-slate-200 hover:bg-red-50" [disabled]="guardando()">
-                  <i class="fa-solid fa-trash"></i>
-                </button>
+                <button (click)="eliminarBanner(b.id)" class="h-10 w-10 rounded-full bg-white text-red-500 shadow-sm border border-slate-200 hover:bg-red-50"><i class="fa-solid fa-trash"></i></button>
               </div>
             }
           </div>

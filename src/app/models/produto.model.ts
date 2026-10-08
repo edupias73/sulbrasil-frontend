@@ -22,6 +22,7 @@ export interface Produto {
   categoria?: string | null;
   descripcion?: string | null;
   urlImagen?: string | null;
+  galeria?: string[];
   codigosCruzados: CodigoCruzado[];
   aplicacoesVeiculo: AplicacaoVeiculo[];
 }

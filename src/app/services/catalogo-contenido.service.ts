@@ -57,15 +57,16 @@ export class CatalogoContenidoService {
     return this.contenido().productos[clave] ?? this.contenido().productos[codigoInterno];
   }
 
-  enriquecer(produto: Produto): Produto {
+ enriquecer(produto: Produto): Produto {
     const extra = this.obtenerProducto(produto.codigoInterno);
     return {
       ...produto,
       descripcion: extra?.descripcion ?? produto.descripcion,
       urlImagen: extra?.imagen ?? produto.urlImagen,
+      galeria: extra?.imagenes ?? [], 
     };
   }
-
+  
   imagenSeccion(seccionId: string): string | null {
     return this.obtenerSeccion(seccionId)?.imagen ?? null;
   }

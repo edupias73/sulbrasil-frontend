@@ -6,6 +6,7 @@ export interface ContenidoSeccion {
 export interface ContenidoProducto {
   descripcion?: string;
   imagen?: string;
+  imagenes?: string[];
 }
 
 export interface CatalogoContenido {

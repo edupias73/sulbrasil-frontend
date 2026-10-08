@@ -133,7 +133,17 @@ export class HomeComponent implements OnInit, OnDestroy {
   cerrarCarrito() { this.carritoAbierto.set(false); }
   enviarWhatsApp() { this.carrito.enviarPedidoWhatsApp(this.whatsappNumero); }
   formatearPrecio(v: number) { return this.carrito.formatearPrecio(v); }
-  imagenProducto(p: Produto) { return p.urlImagen ?? null; }
+  imagenProducto(p: Produto) {
+    const url = p.urlImagen;
+    if (!url) return null;
+    
+    // Se a URL já vier completa (http...), usa ela mesma
+    if (url.startsWith('http')) return url;
+    
+    // Pega a URL base do backend no environment e junta com o caminho da foto
+    const baseUrl = environment.apiUrl.replace('/api/produtos/buscar', '');
+    return baseUrl + url;
+  }
   
   mostrarEstadoVacio() { 
     return this.busqueda.value.trim().length < 2 && !this.seccionActiva(); 

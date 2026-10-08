@@ -108,8 +108,53 @@
       </section>
     } 
 
-    <!-- GRID DE PRODUTOS MANTIDO COMO ESTAVA -->
-    <!-- (Para economizar espaço, o bloco do `mostrarSinResultados` e do `productos().length > 0` fica igual ao que você já tinha) -->
+  <!-- GRID DE PRODUTOS -->
+      @if (mostrarSinResultados()) {
+        <div class="py-20 text-center animate-fade-in">
+          <i class="fa-solid fa-box-open text-6xl text-slate-300 mb-4"></i>
+          <h3 class="text-xl font-bold text-slate-700">Ningún repuesto encontrado</h3>
+          <p class="text-slate-500 mt-2">Intenta buscar con otros términos o verifica la categoría.</p>
+        </div>
+      }
+
+      @if (productos().length > 0) {
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6 mt-6 animate-fade-in">
+          @for (p of productos(); track p.id) {
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden hover:shadow-md hover:border-brand-amber transition-all flex flex-col cursor-pointer group" (click)="abrirDetalle(p)">
+              
+              <!-- Imagem -->
+              <div class="aspect-square bg-slate-50 p-4 flex items-center justify-center relative">
+                @if (imagenProducto(p)) {
+                  <img [src]="imagenProducto(p)" class="max-h-full max-w-full object-contain mix-blend-multiply group-hover:scale-105 transition-transform" [alt]="p.nomePeca" />
+                } @else {
+                  <i class="fa-solid fa-camera text-slate-200 text-5xl"></i>
+                }
+                <!-- Tag do Código -->
+                <span class="absolute top-3 left-3 bg-brand-navy-800 text-white text-[10px] font-bold px-2 py-1 rounded shadow-sm">
+                  {{ p.codigoInterno }}
+                </span>
+              </div>
+
+              <!-- Detalhes -->
+              <div class="p-4 flex flex-col flex-1 border-t border-slate-100">
+                <span class="text-[11px] font-bold text-brand-amber-dark uppercase tracking-wider mb-1">{{ p.marcaPrincipal || 'Genérico' }}</span>
+                <h4 class="text-sm font-bold text-slate-800 leading-snug mb-3 flex-1">{{ p.nomePeca }}</h4>
+                
+                <div class="flex items-end justify-between mt-auto">
+                  <div class="flex flex-col">
+                    <span class="text-[10px] text-slate-400 font-medium uppercase mb-0.5">Precio Unitario</span>
+                    <span class="text-base sm:text-lg font-black text-brand-navy-900 leading-none">₲ {{ formatearPrecio(p.preco) }}</span>
+                  </div>
+                  
+                  <button type="button" (click)="carrito.agregar(p); onAgregadoAlCarrito(); $event.stopPropagation()" class="h-10 w-10 shrink-0 rounded-full bg-slate-100 text-brand-navy-700 flex items-center justify-center hover:bg-brand-whatsapp hover:text-white transition-colors active:scale-95">
+                    <i class="fa-solid fa-cart-plus"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      }
   </div>
 </main>
 
@@ -168,4 +213,12 @@
       }
     </aside>
   </div>
+}
+<!-- MODAL DE DETALHES DO PRODUTO -->
+@if (produtoSeleccionado(); as prod) {
+  <app-producto-detalle
+    [produto]="prod"
+    (cerrar)="cerrarDetalle()"
+    (agregado)="onAgregadoAlCarrito(); cerrarDetalle()"
+  />
 }
