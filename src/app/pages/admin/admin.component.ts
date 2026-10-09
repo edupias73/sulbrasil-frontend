@@ -208,10 +208,12 @@ async selecionarParaEditar(p: Produto): Promise<void> {
         preco: this.manualPreco.value,
         quantidadeEstoque: this.manualEstoque.value,
         categoria: this.manualCategoria.value,
+        
+        descripcion: this.descripcionProducto.value.trim(), 
+        
         aplicacoesVeiculo: this.aplicacoes(), 
         codigosCruzados: this.codigosOem()    
       };
-
       // 1. Salva os dados básicos e arrays MySQL no back-end
       await firstValueFrom(this.http.post(environment.apiUrl.replace('/buscar', '/manual'), novoProduto));
 
