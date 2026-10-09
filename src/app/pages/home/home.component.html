@@ -156,7 +156,83 @@
         </div>
       }
   </div>
-</main>
+</main> 
+<!-- FOOTER DA LOJA -->
+<footer class="bg-brand-navy-900 border-t border-brand-amber/20 pt-12 pb-24 sm:pb-12 mt-12">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-3 gap-8">
+    
+    <!-- 1. Sobre a Loja -->
+    <div>
+      <img src="logo1.jpg-removebg-preview.png" alt="Sulbrasil" class="h-12 w-auto mb-4 opacity-90" />
+      <p class="text-slate-400 text-sm leading-relaxed">
+        Especialistas en repuestos eléctricos automotivos. Venta mayorista y minorista con el mejor precio y calidad del mercado.
+      </p>
+    </div>
+
+    <!-- 2. Endereço e Localização -->
+    <div>
+      <h3 class="text-white font-bold text-lg mb-4 flex items-center gap-2">
+        <i class="fa-solid fa-location-dot text-brand-amber"></i> Nuestra Ubicación
+      </h3>
+      <p class="text-slate-300 text-sm mb-1">
+        Ciudad del Este, Alto Paraná, Paraguay
+      </p>
+      <p class="text-slate-400 text-xs mb-3">
+        (Pon aquí la dirección de tu calle o barrio exacto)
+      </p>
+      <!-- Altere o link abaixo para o link real do seu Google Maps -->
+      <a href="https://maps.google.com/?q=Sulbrasil+Repuestos" target="_blank" class="inline-block px-4 py-2 bg-white/10 rounded-lg text-brand-amber text-sm font-bold hover:bg-white/20 transition-colors">
+        Ver en Google Maps <i class="fa-solid fa-arrow-right ml-1"></i>
+      </a>
+    </div>
+
+    <!-- 3. Contatos dos Vendedores -->
+    <div>
+      <h3 class="text-white font-bold text-lg mb-4 flex items-center gap-2">
+        <i class="fa-brands fa-whatsapp text-brand-whatsapp"></i> Ventas por WhatsApp
+      </h3>
+      <ul class="space-y-3">
+        
+        <!-- VENDEDOR 1 -->
+        <li>
+          <a href="https://wa.me/595983798964" target="_blank" class="flex items-center gap-3 text-slate-300 hover:text-white transition-colors group p-2 -ml-2 rounded-lg hover:bg-white/5">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 group-hover:bg-brand-whatsapp transition-colors">
+              <i class="fa-solid fa-headset text-lg"></i>
+            </span>
+            <div>
+              <p class="text-sm font-bold">Atención Principal</p>
+              <p class="text-xs font-mono text-slate-400">+595 983 798964</p>
+            </div>
+          </a>
+        </li>
+
+        <!-- VENDEDOR 2 -->
+        <li>
+          <!-- Substitua o número no href="https://wa.me/NUMERO" -->
+          <a href="https://wa.me/595984309942" target="_blank" class="flex items-center gap-3 text-slate-300 hover:text-white transition-colors group p-2 -ml-2 rounded-lg hover:bg-white/5">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 group-hover:bg-brand-whatsapp transition-colors">
+              <i class="fa-solid fa-user text-lg"></i>
+            </span>
+            <div>
+              <p class="text-sm font-bold">Ventas </p>
+              <p class="text-xs font-mono text-slate-400">+595 984 309942</p>
+            </div>
+          </a>
+        </li>
+
+        
+        
+        <!-- Se quiser mais vendedores, é só copiar o bloco <li> inteiro e colar aqui embaixo! -->
+
+      </ul>
+    </div>
+  </div>
+  
+  <!-- Direitos Autorais -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 mt-12 pt-6 border-t border-white/10 text-center">
+    <p class="text-slate-500 text-xs">© 2026 SulBrasil Repuestos Eléctricos. Todos los derechos reservados.</p>
+  </div>
+</footer>
 
 <!-- LISTA DE PEDIDOS (CARRINHO) COMPLETAMENTE REDESENHADO -->
 @if (carritoAbierto()) {
