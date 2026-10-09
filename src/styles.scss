@@ -20,43 +20,47 @@ html {
 
 html, body {
   @apply antialiased min-h-screen;
-  overflow-x: hidden;
+  /* Sem bloqueio de overflow aqui para não quebrar a rodinha do mouse */
 }
 
 body {
   @apply bg-slate-50 text-slate-800 font-[Inter,sans-serif];
   -webkit-tap-highlight-color: transparent;
-  overscroll-behavior-y: none;
+  /* Sem overscroll-behavior aqui */
 }
 
 /* Evita zoom automático no iOS ao focar inputs */
 input, select, textarea {
   font-size: 16px;
 }
+
 @media (min-width: 640px) {
   input, select, textarea { font-size: inherit; }
 }
 
-/* Áreas seguras e áreas de toque para Mobile (Mantido do seu catálogo) */
+/* Áreas seguras e áreas de toque para Mobile */
 .safe-top { padding-top: max(0.75rem, env(safe-area-inset-top, 0px)); }
 .safe-bottom { padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px)); }
 .safe-x {
   padding-left: max(1rem, env(safe-area-inset-left, 0px));
   padding-right: max(1rem, env(safe-area-inset-right, 0px));
 }
+
 .touch-target { min-height: 3rem; min-width: 3rem; }
 .touch-row { min-height: 3.25rem; }
+
 .sheet-bottom {
   max-height: min(92dvh, 100%);
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
+
 .scroll-touch {
   -webkit-overflow-scrolling: touch;
   overflow-y: auto;
   overscroll-behavior: contain;
 }
 
-/* Animação do Header de Raios */
+/* Fundo do Header de Raios */
 .bg-header-pattern {
   background-image: url('/assets/Captura de tela 2026-07-28 112419.png');
   background-size: cover;

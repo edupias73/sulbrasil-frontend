@@ -59,12 +59,13 @@ export class AdminComponent implements OnInit, OnDestroy {
   previewProducto: string | null = null;
   imagenActualProducto: string | null = null;
 
-  ngOnInit(): void {
-    document.body.style.overflow = 'hidden';
+ ngOnInit(): void {
     if (this.auth.estaAutenticado()) this.autenticado.set(true);
   }
 
-  ngOnDestroy(): void { document.body.style.overflow = ''; }
+  ngOnDestroy(): void { 
+    // Pode deixar vazio ou apagar a função
+  }
 
   async ingresar(): Promise<void> {
     const pin = this.pinInput.value.trim();
