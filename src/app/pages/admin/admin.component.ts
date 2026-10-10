@@ -207,19 +207,28 @@ async selecionarParaEditar(p: Produto): Promise<void> {
     try {
       const codigoStr = this.manualCodigo.getRawValue().trim().toUpperCase();
       
-      // Monta o objeto completo incluindo as tabelas
-      const novoProduto = {
+     const novoProduto = {
         codigoInterno: codigoStr,
         nomePeca: this.manualNombre.value.trim(),
         marcaPrincipal: this.manualMarca.value?.trim() || '',
         preco: this.manualPreco.value,
         quantidadeEstoque: this.manualEstoque.value,
         categoria: this.manualCategoria.value,
-        
-        descripcion: this.descripcionProducto.value.trim(), 
-        
-        aplicacoesVeiculo: this.aplicacoes(), 
-        codigosCruzados: this.codigosOem()    
+        descripcion: this.descripcionProducto.value?.trim(),
+
+        // Tem que ser exatamente 'marcaFabricante' e 'codigo' para o Java entender!
+        codigosCruzados: this.codigosOem().map((c: any) => ({
+          marcaFabricante: c.marca, // Altere 'c.marca' se a sua variável do formulário tiver outro nome
+          codigo: c.codigo
+        })),
+
+        // Tem que ser exatamente estes 4 nomes!
+        aplicacoesVeiculo: this.aplicacoes().map((a: any) => ({
+          montadora: a.montadora, 
+          veiculo: a.veiculo,     // Se no seu form for 'modelo', troque para a.modelo
+          anoInicio: a.anoInicio,
+          anoFim: a.anoFim
+        }))
       };
       // 1. Salva os dados básicos e arrays MySQL no back-end
       await firstValueFrom(this.http.post(environment.apiUrl.replace('/buscar', '/manual'), novoProduto));
