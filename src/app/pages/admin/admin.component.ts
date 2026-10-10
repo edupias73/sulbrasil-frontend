@@ -147,17 +147,23 @@ async selecionarParaEditar(p: Produto): Promise<void> {
     this.aplicacoes.set(p.aplicacoesVeiculo ? JSON.parse(JSON.stringify(p.aplicacoesVeiculo)) : []);
     this.codigosOem.set(p.codigosCruzados ? JSON.parse(JSON.stringify(p.codigosCruzados)) : []);
 
-    try {
+ try {
       const contenido = await firstValueFrom(this.adminApi.obtenerContenido());
       const prod = contenido.productos[p.codigoInterno.toUpperCase()];
-      this.descripcionProducto.setValue(prod?.descripcion ?? '');
       
-      // Carrega a Galeria de Imagens
+      // Tenta pegar a descrição do MySQL primeiro, senão pega do JSON
+      this.descripcionProducto.setValue(p.descripcion || prod?.descripcion || '');
+      
       const urlList: { url: string; isNew: boolean }[] = [];
-      if (prod?.imagenes && prod.imagenes.length > 0) {
+      
+      // Prioriza a galeria que vem do MySQL agora!
+      if (p.galeria && p.galeria.length > 0) {
+         p.galeria.forEach(img => urlList.push({ url: img, isNew: false }));
+      } else if (p.urlImagen) {
+         urlList.push({ url: p.urlImagen, isNew: false });
+      } else if (prod?.imagenes && prod.imagenes.length > 0) { // Resgate do JSON antigo
          prod.imagenes.forEach(img => urlList.push({ url: img, isNew: false }));
       } else if (prod?.imagen) { 
-         // Retrocompatibilidade para fotos antigas
          urlList.push({ url: prod.imagen, isNew: false });
       }
       

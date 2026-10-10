@@ -1,37 +1,31 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, map } from 'rxjs';
-import { environment } from '../../environments/environment';
 import { Produto } from '../models/produto.model';
+import { environment } from '../../environments/environment';
 import { CatalogoContenidoService } from './catalogo-contenido.service';
 
 @Injectable({ providedIn: 'root' })
 export class ProdutoService {
-  private readonly contenido = inject(CatalogoContenidoService);
+  private readonly http = inject(HttpClient);
+  // Injetamos o serviço que lê o JSON antigo
+  private readonly catalogo = inject(CatalogoContenidoService);
 
-  constructor(private readonly http: HttpClient) {}
-buscar(termo: string, categoria?: string | null): Observable<Produto[]> {
-    // Começamos com os parâmetros vazios, sem injetar 'empresa'
-    let params = new HttpParams();
+  buscar(termo: string, categoria: string | null = null): Observable<Produto[]> {
+    let params = new HttpParams()
+      .set('q', termo)
+      .set('page', '0')
+      .set('size', '200'); 
 
-    if (termo.trim()) {
-      params = params.set('q', termo.trim());
-    }
     if (categoria) {
       params = params.set('categoria', categoria);
     }
 
-    return this.http.get<Produto[]>(environment.apiUrl, { params }).pipe(
-      map((lista) => lista.map((p) => this.contenido.enriquecer(this.normalizar(p)))),
+    return this.http.get<{ content: Produto[] }>(environment.apiUrl, { params }).pipe(
+      map(res => {
+        // A MÁGICA AQUI: Para cada peça do MySQL, ele vai no JSON e resgata a foto!
+        return res.content.map(peca => this.catalogo.enriquecer(peca));
+      })
     );
-  }
-
-  private normalizar(produto: Produto): Produto {
-    return {
-      ...produto,
-      preco: Number(produto.preco),
-      codigosCruzados: produto.codigosCruzados ?? [],
-      aplicacoesVeiculo: produto.aplicacoesVeiculo ?? [],
-    };
   }
 }

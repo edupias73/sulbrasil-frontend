@@ -57,13 +57,15 @@ export class CatalogoContenidoService {
     return this.contenido().productos[clave] ?? this.contenido().productos[codigoInterno];
   }
 
- enriquecer(produto: Produto): Produto {
+enriquecer(produto: Produto): Produto {
     const extra = this.obtenerProducto(produto.codigoInterno);
+    
+    // Prioriza o Banco de Dados (MySQL). Se estiver vazio, puxa do JSON antigo!
     return {
       ...produto,
-      descripcion: extra?.descripcion ?? produto.descripcion,
-      urlImagen: extra?.imagen ?? produto.urlImagen,
-      galeria: extra?.imagenes ?? [], 
+      descripcion: produto.descripcion || extra?.descripcion,
+      urlImagen: produto.urlImagen || extra?.imagen,
+      galeria: (produto.galeria && produto.galeria.length > 0) ? produto.galeria : (extra?.imagenes ?? []),
     };
   }
   
