@@ -149,6 +149,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.busqueda.value.trim().length < 2 && !this.seccionActiva(); 
   }
   
+  construirUrl(url: string): string {
+    if (!url) return '';
+    if (url.startsWith('http')) return url;
+    // Cola o endereço do seu servidor Railway na frente da foto
+    return 'https://sulbrasil-backend-production.up.railway.app' + url;
+  }
+  
   mostrarSinResultados() { 
     return !this.cargando() && this.productos().length === 0 && !this.error() && !this.mostrarEstadoVacio(); 
   }
