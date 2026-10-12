@@ -12,6 +12,7 @@ export interface BannerCarousel {
   id: string;
   tipo: 'imagen' | 'video';
   url: string;
+  imagen?: string;
 }
 
 @Injectable({ providedIn: 'root' })

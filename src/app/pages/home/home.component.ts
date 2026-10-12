@@ -149,13 +149,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     return this.busqueda.value.trim().length < 2 && !this.seccionActiva(); 
   }
   
- construirUrl(url: string): string {
+  
+  mostrarSinResultados() { 
+    return !this.cargando() && this.productos().length === 0 && !this.error() && !this.mostrarEstadoVacio(); 
+  }
+  
+construirUrl(url: string | undefined): string {
     if (!url) return '';
     if (url.startsWith('http') || url.startsWith('blob:')) return url;
     return 'https://sulbrasil-backend-production.up.railway.app' + url;
   }
-
-  mostrarSinResultados() { 
-    return !this.cargando() && this.productos().length === 0 && !this.error() && !this.mostrarEstadoVacio(); 
-  }
-}
+} //

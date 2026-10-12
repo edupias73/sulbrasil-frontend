@@ -54,21 +54,24 @@
 
     @if (mostrarEstadoVacio()) {
       
-      <!-- O NOVO CARROSSEL DINÂMICO -->
+      <!-- O NOVO CARROSSEL DINÂMICO CORRIGIDO -->
       @if (banners().length > 0) {
         <section class="mb-10 rounded-2xl overflow-hidden shadow-lg relative h-[250px] sm:h-[400px] group bg-black">
-          @for (banner of banners(); track banner.id; let i = $index) {
-             <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" [class.opacity-0]="slideActivo() !== i" [class.opacity-100]="slideActivo() === i">
+          @for (banner of banners(); track banner.id || $index; let i = $index) {
+             <div class="absolute inset-0 transition-opacity duration-700 ease-in-out" 
+                  [class.opacity-0]="slideActivo() !== i" 
+                  [class.opacity-100]="slideActivo() === i || (slideActivo() == null && i === 0)">
                 @if (banner.tipo === 'video') {
-                   <video [src]="banner.url" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+                   <video [src]="construirUrl(banner.url || banner.imagen)" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
                 } @else {
-                   <img [src]="banner.url" class="w-full h-full object-cover" />
+                   <!-- CORREÇÃO: URL vs Imagen com construirUrl -->
+                   <img [src]="construirUrl(banner.url || banner.imagen)" class="w-full h-full object-cover" />
                 }
              </div>
           }
           <!-- Bolinhas de Navegação -->
           <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-10">
-             @for (banner of banners(); track banner.id; let i = $index) {
+             @for (banner of banners(); track banner.id || $index; let i = $index) {
                 <button (click)="mudarSlide(i)" class="h-2 rounded-full transition-all shadow-md" [class]="slideActivo() === i ? 'w-8 bg-brand-amber' : 'w-2 bg-white/70'"></button>
              }
           </div>
@@ -180,7 +183,6 @@
       <p class="text-slate-400 text-xs mb-3">
         (Che la reina, KM4, calle Rosario)
       </p>
-      <!-- Altere o link abaixo para o link real do seu Google Maps -->
       <a href="https://maps.google.com/?q=Sulbrasil+Repuestos" target="_blank" class="inline-block px-4 py-2 bg-white/10 rounded-lg text-brand-amber text-sm font-bold hover:bg-white/20 transition-colors">
         Ver en Google Maps <i class="fa-solid fa-arrow-right ml-1"></i>
       </a>
@@ -208,7 +210,6 @@
 
         <!-- VENDEDOR 2 -->
         <li>
-          <!-- Substitua o número no href="https://wa.me/NUMERO" -->
           <a href="https://wa.me/595984309942" target="_blank" class="flex items-center gap-3 text-slate-300 hover:text-white transition-colors group p-2 -ml-2 rounded-lg hover:bg-white/5">
             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white/10 group-hover:bg-brand-whatsapp transition-colors">
               <i class="fa-solid fa-user text-lg"></i>
@@ -219,11 +220,6 @@
             </div>
           </a>
         </li>
-
-        
-        
-        <!-- Se quiser mais vendedores, é só copiar o bloco <li> inteiro e colar aqui embaixo! -->
-
       </ul>
     </div>
   </div>
