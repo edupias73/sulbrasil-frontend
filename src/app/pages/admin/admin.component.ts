@@ -207,28 +207,32 @@ async selecionarParaEditar(p: Produto): Promise<void> {
     try {
       const codigoStr = this.manualCodigo.getRawValue().trim().toUpperCase();
       
-     const novoProduto = {
+    const novoProduto = {
         codigoInterno: codigoStr,
         nomePeca: this.manualNombre.value.trim(),
-        marcaPrincipal: this.manualMarca.value?.trim() || '',
-        preco: this.manualPreco.value,
-        quantidadeEstoque: this.manualEstoque.value,
+        marcaPrincipal: this.manualMarca.value?.trim() || 'GENÉRICO',
+        preco: this.manualPreco.value ?? 0,
+        quantidadeEstoque: this.manualEstoque.value ?? 0,
         categoria: this.manualCategoria.value,
-        descripcion: this.descripcionProducto.value?.trim(),
+        descripcion: this.descripcionProducto.value?.trim() || '',
 
-        // Tem que ser exatamente 'marcaFabricante' e 'codigo' para o Java entender!
-        codigosCruzados: this.codigosOem().map((c: any) => ({
-          marcaFabricante: c.marca, // Altere 'c.marca' se a sua variável do formulário tiver outro nome
-          codigo: c.codigo
-        })),
+        // CORREÇÃO: Lê 'marcaFabricante' corretamente, filtra linhas vazias e usa 'OEM' se a marca ficar em branco
+        codigosCruzados: this.codigosOem()
+          .filter((c: any) => c.codigo && c.codigo.trim() !== '')
+          .map((c: any) => ({
+            marcaFabricante: (c.marcaFabricante || c.marca || 'OEM').trim().toUpperCase(),
+            codigo: c.codigo.trim().toUpperCase()
+          })),
 
-        // Tem que ser exatamente estes 4 nomes!
-        aplicacoesVeiculo: this.aplicacoes().map((a: any) => ({
-          montadora: a.montadora, 
-          veiculo: a.veiculo,     // Se no seu form for 'modelo', troque para a.modelo
-          anoInicio: a.anoInicio,
-          anoFim: a.anoFim
-        }))
+        // Filtra aplicações vazias e garante valores padrão para não quebrar o MySQL
+        aplicacoesVeiculo: this.aplicacoes()
+          .filter((a: any) => (a.montadora && a.montadora.trim() !== '') || (a.veiculo && a.veiculo.trim() !== ''))
+          .map((a: any) => ({
+            montadora: (a.montadora || 'VARIOS').trim().toUpperCase(),
+            veiculo: (a.veiculo || 'TODOS').trim().toUpperCase(),
+            anoInicio: a.anoInicio ? Number(a.anoInicio) : null,
+            anoFim: a.anoFim ? Number(a.anoFim) : null
+          }))
       };
       // 1. Salva os dados básicos e arrays MySQL no back-end
       await firstValueFrom(this.http.post(environment.apiUrl.replace('/buscar', '/manual'), novoProduto));

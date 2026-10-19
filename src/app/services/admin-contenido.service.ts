@@ -49,12 +49,13 @@ eliminarProducto(codigoInterno: string): Observable<void> {
     );
   }
 
-  importarCsv(archivo: File): Observable<any> {
+ importarCsv(archivo: File): Observable<any> {
     const form = new FormData();
-    form.append('arquivo', archivo);
-    // Transforma a URL /buscar na URL /importar do seu backend
-    const url = environment.apiUrl.replace('/buscar', '/importar');
-    return this.http.post<any>(url, form);
+    // CORREÇÃO: O backend espera 'archivo' e a rota fica em adminApiUrl (/api/admin/importar-csv)
+    form.append('archivo', archivo);
+    return this.http.post<any>(`${environment.adminApiUrl}/importar-csv`, form, {
+      headers: this.headersAdminMultipart(),
+    });
   }
 
   subirImagen(tipo: 'secciones' | 'productos', id: string, archivo: File): Observable<string> {
